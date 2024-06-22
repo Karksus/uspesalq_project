@@ -7,11 +7,16 @@
 library(targets)
 library(qs)
 library(fst)
+library(crew)
 # library(tarchetypes) # Load other packages as needed.
 
 # Set target options:
 tar_option_set(
-  packages = c("dplyr","data.table","arrow", "httr") # Packages that your targets need for their tasks.
+  packages = c("dplyr","data.table","arrow", "httr", "jsonlite","stringr", "biomaRt", "org.Hs.eg.db", "depmap"),
+  #controller = crew_controller_local(workers = 3, seconds_idle = 3),
+  memory = "transient",
+  garbage_collection = TRUE
+  # Packages that your targets need for their tasks.
   # format = "qs", # Optionally set the default storage format. qs is fast.
   #
   # Pipelines that take a long time to run may benefit from
@@ -47,30 +52,30 @@ tar_option_set(
 )
 
 # Run the R scripts in the R/ folder with your custom functions:
-tar_source("R/functions.R")
+tar_source("R/")
 # tar_source("other_functions.R") # Source other scripts as needed.
 
 # Replace the target list below with your own:
 list(
   tar_target(
     targeted_data,
-    get_cosmic_target_data("cosmic_data/Cosmic_CompleteTargetedScreensMutant_v99_GRCh37.tsv"),
+    get_cosmic_target_data("data/Cosmic_CompleteTargetedScreensMutant_v99_GRCh37.tsv"),
     format = "qs"),
   tar_target(
     wgs_data,
-    get_cosmic_wgs_data("cosmic_data/Cosmic_GenomeScreensMutant_v99_GRCh37.tsv"),
+    get_cosmic_wgs_data("data/Cosmic_GenomeScreensMutant_v99_GRCh37.tsv"),
     format = "qs"),
   tar_target(
     classification_data,
-    load_classification_data("cosmic_data/Cosmic_Classification_v99_GRCh37.tsv"),
+    load_classification_data("data/Cosmic_Classification_v99_GRCh37.tsv"),
     format = "qs"),
   tar_target(
     cgc_data,
-    load_classification_data("cosmic_data/Cosmic_CancerGeneCensus_v99_GRCh37.tsv"),
+    load_cgc_data("data/Cosmic_CancerGeneCensus_v99_GRCh37.tsv"),
     format = "qs"),
   tar_target(
     hallmarks_data,
-    load_classification_data("cosmic_data/Cosmic_CancerGeneCensusHallmarksOfCancer_v99_GRCh37.tsv"),
+    load_hallmarks_data("data/Cosmic_CancerGeneCensusHallmarksOfCancer_v99_GRCh37.tsv"),
     format = "qs"),
   tar_target(
     targeted_classify,
@@ -95,6 +100,44 @@ list(
   tar_target(
     gene_frequency,
     calculate_frequency(merged_counts),
-    format = "fst_dt")
+    format = "fst_dt"),
+  tar_target(
+    entrez_gene_data,
+    get_entrez_gene_list(),
+    format = "qs"),
+  tar_target(
+    pubmed_gene_citations,
+    load_and_format_pubmed_data("data/pubmed_citation_count.csv"),
+    format = "qs"),
+  tar_target(
+    entrez_pubmed_merged,
+    merge_entrez_pubmed(pubmed_gene_citations, entrez_gene_data),
+    format = "qs"),
+  tar_target(
+    gene_list,
+    final_gene_list(entrez_pubmed_merged),
+    deployment = "main",
+    format = "qs"),
+  tar_target(
+    clinicaltrials_gene_count,
+    get_clinicaltrials_gene_count(gene_list),
+    format = "qs"),
+  tar_target(
+    depmap_crispr_data,
+    load_depmap_crispr_data(),
+    format = "qs"),
+  tar_target(
+    depmap_rnai_data,
+    load_depmap_rnai_data(),
+    format = "qs"),
+  tar_target(
+    oncokb_data,
+    get_oncokb_data("https://www.oncokb.org/api/v1/utils/allCuratedGenes?includeEvidence=true"),
+    deployment = "main",
+    format = "qs"),
+  tar_target(
+    formatted_oncokb,
+    format_oncokb_data(oncokb_data),
+    deployment = "main",
+    format = "qs")
 )
-tar_load(gene_frequency)
