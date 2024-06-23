@@ -49,5 +49,5 @@ po/*~
 rsconnect/
 
 # cosmic data
-cosmic_data/
+data/
 .env

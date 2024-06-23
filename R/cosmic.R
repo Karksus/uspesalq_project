@@ -1,10 +1,6 @@
-library(targets)
-library(dotenv)
 library(httr)
 library(dplyr)
 library(arrow)
-library(base64enc)
-library(R.utils)
 library(data.table)
 
 ###############################COMSIC###########################################
@@ -40,17 +36,9 @@ get_cosmic_wgs_data <- function(wgs_path){
     setDT()
 }
 
-get_cosmic_sample_data <- function(samples_path){
-  sample_data <- arrow::open_dataset(samples_path, format = "tsv") %>%
-    dplyr::select(c("COSMIC_SAMPLE_ID", "WHOLE_GENOME_SCREEN", "COSMIC_PHENOTYPE_ID")) %>%
-    #dplyr::filter(WHOLE_GENOME_SCREEN == "y") %>%
-    collect() %>%
-    setDT()
-}
-
 load_classification_data <- function(classification_path){
   classification <- fread(classification_path) %>%
-    select(1:2) %>%
+    dplyr::select(1:2) %>%
     unique() %>%
     {
       test <- as.data.frame(table(.$COSMIC_PHENOTYPE_ID)) %>%
@@ -62,20 +50,15 @@ load_classification_data <- function(classification_path){
 join_targeted_classification <- function(target_data, classification_data){
   target_data <- target_data %>%
     left_join(classification_data) %>%
-    select(-COSMIC_PHENOTYPE_ID)
+    dplyr::select(-COSMIC_PHENOTYPE_ID)
 }
 
 join_wgs_classification <- function(wgs_data, classification_data){
   wgs_data <- wgs_data %>%
     left_join(classification_data) %>%
-    select(-COSMIC_PHENOTYPE_ID)
+    dplyr::select(-COSMIC_PHENOTYPE_ID)
 }
 
-join_samples_classification <- function(sample_data, classification_data){
-  sample_data <- sample_data %>%
-    left_join(classification_data) %>%
-    select(-COSMIC_PHENOTYPE_ID)
-}
 calculate_targeted_counts <- function(target_data){
   target_counts <- target_data[, .(
     target_pos_samples = uniqueN(COSMIC_SAMPLE_ID[MUTATION_DESCRIPTION != ""]),
@@ -100,4 +83,12 @@ calculate_frequency <- function(gene_counts){
   gene_counts[, FREQ := (target_pos_samples + wgs_pos_samples) /
                 (target_neg_samples + target_pos_samples + (wgs_pos_samples+wgs_neg_samples)) * 100]
   #gene_frequency_df <- gene_counts[, .(GENE_SYMBOL, SITE_PRIMARY, FREQ)]
+}
+
+load_cgc_data <- function(cgc_path){
+  cgc_data <- arrow::open_dataset(cgc_path, format = "tsv")
+}
+
+load_hallmarks_data <- function(hallmarks_path){
+  hallmarks_data <- arrow::open_dataset(hallmarks_path, format = "tsv")
 }

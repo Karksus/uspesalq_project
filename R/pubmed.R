@@ -12,22 +12,22 @@ get_entrez_gene_list <- function(){
                            mart = mart) %>%
     dplyr::rename(entrez_id = entrezgene_id, gene_symbol = hgnc_symbol) %>%
     dplyr::filter(!is.na(entrez_id) & !is.na(gene_symbol))
-  
-  genes <- annotated_genes$gene_symbol
 }
 
-
-load_pubmed_data <- function(pubmed_data){
-  df <- results %>%
+load_and_format_pubmed_data <- function(pubmed_path){
+  pubmed_data <- read.csv(pubmed_path)
+  df <- pubmed_data %>%
     mutate(
-      gene_symbol = str_extract(search_term, "^[^ ]+"), # Extracts the first word before space
-      year = str_extract(search_term, "\\d{4}(?=\\[PDAT\\])") # Extracts four digits before "[PDAT]"
+      gene_symbol = str_extract(search_term, "^[^ ]+"),
+      year = str_extract(search_term, "\\d{4}(?=\\[PDAT\\])")
     )
 }
 
-extract_gene_list <- function(pubmed_data, entrez_gene_list){
+merge_entrez_pubmed <- function(pubmed_data, entrez_data){
   df_merged <- pubmed_data %>%
-    inner_join(entrez_gene_list, by = "gene_symbol")
-  genelist <- unique(df_merged$gene_symbol)
+    inner_join(entrez_data, by = "gene_symbol")
 }
 
+final_gene_list <- function(df_merged){
+  genelist <- unique(df_merged$gene_symbol)
+}
