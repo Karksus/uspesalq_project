@@ -3,18 +3,21 @@ library(dplyr)
 library(biomaRt)
 library(org.Hs.eg.db)
 
-get_entrez_gene_list <- function(){
+get_entrez_gene_list <- function() {
   mart <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
   symb <- keys(org.Hs.eg.db, "SYMBOL")
-  annotated_genes <- getBM(attributes = c("entrezgene_id", "hgnc_symbol"), 
-                           filters = "hgnc_symbol", 
-                           values = symb, 
-                           mart = mart) %>%
+  annotated_genes <-
+    getBM(
+      attributes = c("entrezgene_id", "hgnc_symbol"),
+      filters = "hgnc_symbol",
+      values = symb,
+      mart = mart
+    ) %>%
     dplyr::rename(entrez_id = entrezgene_id, gene_symbol = hgnc_symbol) %>%
     dplyr::filter(!is.na(entrez_id) & !is.na(gene_symbol))
 }
 
-load_and_format_pubmed_data <- function(pubmed_path){
+load_and_format_pubmed_data <- function(pubmed_path) {
   pubmed_data <- read.csv(pubmed_path)
   df <- pubmed_data %>%
     mutate(
@@ -23,11 +26,11 @@ load_and_format_pubmed_data <- function(pubmed_path){
     )
 }
 
-merge_entrez_pubmed <- function(pubmed_data, entrez_data){
+merge_entrez_pubmed <- function(pubmed_data, entrez_data) {
   df_merged <- pubmed_data %>%
     inner_join(entrez_data, by = "gene_symbol")
 }
 
-final_gene_list <- function(df_merged){
+final_gene_list <- function(df_merged) {
   genelist <- unique(df_merged$gene_symbol)
 }
