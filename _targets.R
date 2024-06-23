@@ -12,7 +12,18 @@ library(crew)
 
 # Set target options:
 tar_option_set(
-  packages = c("dplyr","data.table","arrow", "httr", "jsonlite","stringr", "biomaRt", "org.Hs.eg.db", "depmap", "purrr"),
+  packages = c(
+    "dplyr",
+    "data.table",
+    "arrow",
+    "httr",
+    "jsonlite",
+    "stringr",
+    "biomaRt",
+    "org.Hs.eg.db",
+    "depmap",
+    "purrr"
+  ),
   #controller = crew_controller_local(workers = 3, seconds_idle = 3),
   memory = "transient",
   garbage_collection = TRUE
@@ -34,7 +45,7 @@ tar_option_set(
   # cluster, select a controller from the {crew.cluster} package.
   # For the cloud, see plugin packages like {crew.aws.batch}.
   # The following example is a controller for Sun Grid Engine (SGE).
-  # 
+  #
   #   controller = crew.cluster::crew_controller_sge(
   #     # Number of workers that the pipeline can scale up to:
   #     workers = 10,
@@ -60,84 +71,99 @@ list(
   tar_target(
     targeted_data,
     get_cosmic_target_data("data/Cosmic_CompleteTargetedScreensMutant_v99_GRCh37.tsv"),
-    format = "qs"),
+    format = "qs"
+  ),
   tar_target(
     wgs_data,
     get_cosmic_wgs_data("data/Cosmic_GenomeScreensMutant_v99_GRCh37.tsv"),
-    format = "qs"),
+    format = "qs"
+  ),
   tar_target(
     classification_data,
     load_classification_data("data/Cosmic_Classification_v99_GRCh37.tsv"),
-    format = "qs"),
+    format = "qs"
+  ),
   tar_target(
     cgc_data,
     load_cgc_data("data/Cosmic_CancerGeneCensus_v99_GRCh37.tsv"),
-    format = "qs"),
+    format = "qs"
+  ),
   tar_target(
     hallmarks_data,
-    load_hallmarks_data("data/Cosmic_CancerGeneCensusHallmarksOfCancer_v99_GRCh37.tsv"),
-    format = "qs"),
+    load_hallmarks_data(
+      "data/Cosmic_CancerGeneCensusHallmarksOfCancer_v99_GRCh37.tsv"
+    ),
+    format = "qs"
+  ),
   tar_target(
     targeted_classify,
     join_targeted_classification(targeted_data, classification_data),
-    format = "qs"),
+    format = "qs"
+  ),
   tar_target(
     wgs_classify,
     join_wgs_classification(wgs_data, classification_data),
-    format = "qs"),
+    format = "qs"
+  ),
   tar_target(
     targeted_counts,
     calculate_targeted_counts(targeted_classify),
-    format = "qs"),
+    format = "qs"
+  ),
   tar_target(
     wgs_total_counts,
     calculate_wgs_counts(wgs_classify),
-    format = "qs"),
+    format = "qs"
+  ),
   tar_target(
     merged_counts,
     merge_counts(targeted_counts, wgs_total_counts),
-    format = "qs"),
-  tar_target(
-    gene_frequency,
-    calculate_frequency(merged_counts),
-    format = "fst_dt"),
-  tar_target(
-    entrez_gene_data,
-    get_entrez_gene_list(),
-    format = "qs"),
+    format = "qs"
+  ),
+  tar_target(gene_frequency,
+             calculate_frequency(merged_counts),
+             format = "fst_dt"),
+  tar_target(entrez_gene_data,
+             get_entrez_gene_list(),
+             format = "qs"),
   tar_target(
     pubmed_gene_citations,
     load_and_format_pubmed_data("data/pubmed_citation_count.csv"),
-    format = "qs"),
+    format = "qs"
+  ),
   tar_target(
     entrez_pubmed_merged,
     merge_entrez_pubmed(pubmed_gene_citations, entrez_gene_data),
-    format = "qs"),
+    format = "qs"
+  ),
   tar_target(
     gene_list,
     final_gene_list(entrez_pubmed_merged),
     deployment = "main",
-    format = "qs"),
- # tar_target(
+    format = "qs"
+  ),
+  # tar_target(
   #  clinicaltrials_gene_count,
-   # get_clinicaltrials_gene_count(gene_list),
-    #format = "qs"),
-  tar_target(
-    depmap_crispr_data,
-    load_depmap_crispr_data(),
-    format = "qs"),
-  tar_target(
-    depmap_rnai_data,
-    load_depmap_rnai_data(),
-    format = "qs"),
+  # get_clinicaltrials_gene_count(gene_list),
+  #format = "qs"),
+  tar_target(depmap_crispr_data,
+             load_depmap_crispr_data(),
+             format = "qs"),
+  tar_target(depmap_rnai_data,
+             load_depmap_rnai_data(),
+             format = "qs"),
   tar_target(
     oncokb_data,
-    get_oncokb_data("https://www.oncokb.org/api/v1/utils/allCuratedGenes?includeEvidence=true"),
+    get_oncokb_data(
+      "https://www.oncokb.org/api/v1/utils/allCuratedGenes?includeEvidence=true"
+    ),
     deployment = "main",
-    format = "qs"),
+    format = "qs"
+  ),
   tar_target(
     formatted_oncokb,
     format_oncokb_data(oncokb_data),
     deployment = "main",
-    format = "qs")
+    format = "qs"
+  )
 )
