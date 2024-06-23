@@ -12,7 +12,7 @@ library(crew)
 
 # Set target options:
 tar_option_set(
-  packages = c("dplyr","data.table","arrow", "httr", "jsonlite","stringr", "biomaRt", "org.Hs.eg.db", "depmap"),
+  packages = c("dplyr","data.table","arrow", "httr", "jsonlite","stringr", "biomaRt", "org.Hs.eg.db", "depmap", "purrr"),
   #controller = crew_controller_local(workers = 3, seconds_idle = 3),
   memory = "transient",
   garbage_collection = TRUE
@@ -118,10 +118,10 @@ list(
     final_gene_list(entrez_pubmed_merged),
     deployment = "main",
     format = "qs"),
-  tar_target(
-    clinicaltrials_gene_count,
-    get_clinicaltrials_gene_count(gene_list),
-    format = "qs"),
+ # tar_target(
+  #  clinicaltrials_gene_count,
+   # get_clinicaltrials_gene_count(gene_list),
+    #format = "qs"),
   tar_target(
     depmap_crispr_data,
     load_depmap_crispr_data(),
