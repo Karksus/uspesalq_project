@@ -3,7 +3,7 @@ library(dplyr)
 library(biomaRt)
 library(org.Hs.eg.db)
 
-get_entrez_gene_list <- function() {
+get_entrez_gene_data <- function() {
   mart <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
   symb <- keys(org.Hs.eg.db, "SYMBOL")
   annotated_genes <-
@@ -15,6 +15,8 @@ get_entrez_gene_list <- function() {
     ) %>%
     dplyr::rename(entrez_id = entrezgene_id, gene_symbol = hgnc_symbol) %>%
     dplyr::filter(!is.na(entrez_id) & !is.na(gene_symbol))
+  annotated_genes <- annotated_genes[!duplicated(annotated_genes$gene_symbol),]
+    
 }
 
 load_and_format_pubmed_data <- function(pubmed_path) {

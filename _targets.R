@@ -120,11 +120,11 @@ list(
     merge_counts(targeted_counts, wgs_total_counts),
     format = "qs"
   ),
-  tar_target(gene_frequency,
-             calculate_frequency(merged_counts),
+  tar_target(cosmic_gene_frequency,
+             calculate_cosmic_frequency(merged_counts),
              format = "fst_dt"),
   tar_target(entrez_gene_data,
-             get_entrez_gene_list(),
+             get_entrez_gene_data(),
              format = "qs"),
   tar_target(
     pubmed_gene_citations,
@@ -163,6 +163,24 @@ list(
   tar_target(
     formatted_oncokb,
     format_oncokb_data(oncokb_data),
+    deployment = "main",
+    format = "qs"
+  ),
+  tar_target(
+    annotated_cosmic_freq_data,
+    annotate_cosmic_freq_data(cosmic_gene_frequency, entrez_gene_data),
+    deployment = "main",
+    format = "qs"
+  ),
+  tar_target(
+    merged_cosmic_freq_cgc,
+    merge_cosmic_freq_cgc(annotated_cosmic_freq_data, cgc_data),
+    deployment = "main",
+    format = "qs"
+  ),
+  tar_target(
+    merged_cosmic_freq,
+    merge_cosmic_freq_hallmarks(merged_cosmic_freq_cgc, hallmarks_data),
     deployment = "main",
     format = "qs"
   )
