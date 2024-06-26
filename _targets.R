@@ -142,15 +142,29 @@ list(
     deployment = "main",
     format = "qs"
   ),
-  # tar_target(
-  #  clinicaltrials_gene_count,
-  # get_clinicaltrials_gene_count(gene_list),
-  #format = "qs"),
+  tar_target(
+    clinicaltrials_gene_count,
+    load_clinicaltrials_data("data/clinical_trials_data.csv"),
+    deployment = "main",
+    format = "qs"
+    ),
+  tar_target(
+    annotated_clinicaltrials_data,
+    annotate_clinicaltrials_data(clinicaltrials_gene_count, entrez_gene_data),
+    deployment = "main",
+    format = "qs"
+  ),
   tar_target(depmap_crispr_data,
              load_depmap_crispr_data(),
              format = "qs"),
+  tar_target(pivot_wider_depmap_crispr,
+             depmap_crispr_site_to_column(depmap_crispr_data),
+             format = "qs"),
   tar_target(depmap_rnai_data,
              load_depmap_rnai_data(),
+             format = "qs"),
+  tar_target(pivot_wider_depmap_rnai,
+             depmap_rnai_site_to_column(depmap_rnai_data),
              format = "qs"),
   tar_target(
     oncokb_data,
@@ -181,6 +195,12 @@ list(
   tar_target(
     merged_cosmic_freq,
     merge_cosmic_freq_hallmarks(merged_cosmic_freq_cgc, hallmarks_data),
+    deployment = "main",
+    format = "qs"
+  ),
+  tar_target(
+    pivot_wider_cosmic,
+    cosmic_site_to_column(merged_cosmic_freq),
     deployment = "main",
     format = "qs"
   )

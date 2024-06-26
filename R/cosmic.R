@@ -2,7 +2,7 @@ library(httr)
 library(dplyr)
 library(arrow)
 library(data.table)
-
+library(tidyr)
 ###############################COMSIC###########################################
 get_cosmic_target_data <- function(targeted_path) {
   valid_mut_type <-
@@ -150,8 +150,8 @@ load_hallmarks_data <- function(hallmarks_path) {
     dplyr::select(c("GENE_SYMBOL", "HALLMARK")) %>%
     collect() %>%
     setDT()
-    hallmarks_data[, HALLMARK := "yes"]
-    hallmarks_data <- unique(hallmarks_data, by = "GENE_SYMBOL")
+  hallmarks_data[, HALLMARK := "yes"]
+  hallmarks_data <- unique(hallmarks_data, by = "GENE_SYMBOL")
 }
 
 annotate_cosmic_freq_data <- function(cosmic_data, entrez_data) {
@@ -160,14 +160,31 @@ annotate_cosmic_freq_data <- function(cosmic_data, entrez_data) {
     left_join(entrez_data, by = "gene_symbol")
 }
 
-merge_cosmic_freq_cgc <- function(annotated_cosmic_freq_data, cgc_data) {
-  cgc_data <- cgc_data %>% dplyr::rename(gene_symbol = GENE_SYMBOL)
-  df_merged <- annotated_cosmic_freq_data %>%
-    left_join(cgc_data, by = "gene_symbol")
-}
+merge_cosmic_freq_cgc <-
+  function(annotated_cosmic_freq_data, cgc_data) {
+    cgc_data <- cgc_data %>% dplyr::rename(gene_symbol = GENE_SYMBOL)
+    df_merged <- annotated_cosmic_freq_data %>%
+      left_join(cgc_data, by = "gene_symbol")
+  }
 
-merge_cosmic_freq_hallmarks <- function(merged_cosmic_freq_cgc, hallmarks_data) {
-  hallmarks_data <- hallmarks_data %>% dplyr::rename(gene_symbol = GENE_SYMBOL)
-  df_merged <- merged_cosmic_freq_cgc %>%
-    left_join(hallmarks_data, by = "gene_symbol")
+merge_cosmic_freq_hallmarks <-
+  function(merged_cosmic_freq_cgc, hallmarks_data) {
+    hallmarks_data <-
+      hallmarks_data %>% dplyr::rename(gene_symbol = GENE_SYMBOL)
+    df_merged <- merged_cosmic_freq_cgc %>%
+      left_join(hallmarks_data, by = "gene_symbol")
+  }
+
+cosmic_site_to_column <- function(merged_cosmic_freq) {
+  df <- merged_cosmic_freq %>%
+    pivot_wider(
+      names_from = PRIMARY_SITE,
+      values_from = c(
+        target_pos_samples,
+        target_neg_samples,
+        wgs_pos_samples,
+        wgs_neg_samples,
+        FREQ
+      )
+    )
 }

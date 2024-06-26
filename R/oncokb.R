@@ -10,7 +10,6 @@ get_oncokb_data <- function(url) {
 format_oncokb_data <- function(oncokb_data) {
   oncokb_data <- oncokb_data %>%
     dplyr::select(
-      grch37Isoform,
       entrezGeneId,
       hugoSymbol,
       oncogene,
@@ -19,7 +18,7 @@ format_oncokb_data <- function(oncokb_data) {
       tsg
     ) %>%
     dplyr::rename(
-      entrez = entrezGeneId,
+      entrez_id = entrezGeneId,
       gene = hugoSymbol,
       oncogene = oncogene,
       highestSensitiveLevel = highestSensitiveLevel,

@@ -1,33 +1,9 @@
-library(dplyr)
-library(httr)
-library(jsonlite)
+load_clinicaltrials_data <- function(clinicaltrials_path) {
+  df <- read.csv(clinicaltrials_path)
+}
 
-
-get_clinicaltrials_gene_count <- function(genes) {
-  results <-
-    data.frame(
-      Gene = character(),
-      StudyCount = numeric(),
-      stringsAsFactors = FALSE
-    )
-  
-  for (gene in genes) {
-    api_url <-
-      paste0(
-        "https://clinicaltrials.gov/api/v2/studies?query.cond=cancer&query.term=",
-        gene,
-        "&countTotal=true"
-      )
-    response <- GET(api_url)
-    data <- fromJSON(httr::content(response, "text"))
-    results <-
-      rbind(
-        results,
-        data.frame(
-          Gene = gene,
-          StudyCount = data$totalCount,
-          stringsAsFactors = FALSE
-        )
-      )
-  }
+annotate_clinicaltrials_data <- function(clinicaltrials_data, entrez_data) {
+  df_merged <- clinicaltrials_data %>%
+    dplyr::rename(gene_symbol = Gene) %>%
+    left_join(entrez_data, by = "gene_symbol")
 }
