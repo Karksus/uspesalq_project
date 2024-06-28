@@ -30,7 +30,13 @@ load_and_format_pubmed_data <- function(pubmed_path) {
 
 merge_entrez_pubmed <- function(pubmed_data, entrez_data) {
   df_merged <- pubmed_data %>%
-    inner_join(entrez_data, by = "gene_symbol")
+    inner_join(entrez_data, by = "gene_symbol") %>%
+    dplyr::select(-search_term) %>%
+    distinct(gene_symbol, entrez_id, year, .keep_all = TRUE) %>%
+    pivot_wider(
+      names_from = year,
+      values_from = count
+    )
 }
 
 final_gene_list <- function(df_merged) {

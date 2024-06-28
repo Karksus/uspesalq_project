@@ -144,6 +144,10 @@ load_cgc_data <- function(cgc_path) {
     setDT()
 }
 
+load_cgc_futreal_data <- function(cgc_futreal_path) {
+  df <- read.csv(cgc_futreal_path, sep = ";")
+}
+  
 load_hallmarks_data <- function(hallmarks_path) {
   hallmarks_data <-
     arrow::open_dataset(hallmarks_path, format = "tsv") %>%
@@ -187,4 +191,16 @@ cosmic_site_to_column <- function(merged_cosmic_freq) {
         FREQ
       )
     )
+}
+
+merge_cosmic_data <- function(cosmic_wider, cgc_futreal_data) {
+  df <- cosmic_wider %>%
+    full_join(cgc_futreal_data, by = "entrez_id") %>%
+    mutate(cgc_status = case_when(
+      is.na(ROLE_IN_CANCER) & !is.na(is_cgc) ~ "new_cgc",
+      !is.na(ROLE_IN_CANCER) & is.na(is_cgc) ~ "old_cgc",
+      is.na(ROLE_IN_CANCER) & is.na(is_cgc) ~ "never_cgc",
+      !is.na(ROLE_IN_CANCER) & !is.na(is_cgc) ~ "all_cgc"
+    )) %>%
+    dplyr::select(-c(ROLE_IN_CANCER),is_cgc)
 }

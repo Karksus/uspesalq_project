@@ -89,10 +89,21 @@ list(
     format = "qs"
   ),
   tar_target(
+    cgc_futreal_data,
+    load_cgc_futreal_data("data/cancer_gene_census_futreal.csv"),
+    format = "qs"
+  ),
+  tar_target(
     hallmarks_data,
     load_hallmarks_data(
       "data/Cosmic_CancerGeneCensusHallmarksOfCancer_v99_GRCh37.tsv"
     ),
+    format = "qs"
+  ),
+  tar_target(
+    clinicaltrials_gene_count,
+    load_clinicaltrials_data("data/clinical_trials_data.csv"),
+    deployment = "main",
     format = "qs"
   ),
   tar_target(
@@ -142,12 +153,6 @@ list(
     deployment = "main",
     format = "qs"
   ),
-  tar_target(
-    clinicaltrials_gene_count,
-    load_clinicaltrials_data("data/clinical_trials_data.csv"),
-    deployment = "main",
-    format = "qs"
-    ),
   tar_target(
     annotated_clinicaltrials_data,
     annotate_clinicaltrials_data(clinicaltrials_gene_count, entrez_gene_data),
@@ -201,6 +206,12 @@ list(
   tar_target(
     pivot_wider_cosmic,
     cosmic_site_to_column(merged_cosmic_freq),
+    deployment = "main",
+    format = "qs"
+  ),
+  tar_target(
+    merged_cosmic_data,
+    merge_cosmic_data(pivot_wider_cosmic, cgc_futreal_data),
     deployment = "main",
     format = "qs"
   )

@@ -6,9 +6,11 @@ library(purrr)
 load_depmap_crispr_data <- function() {
   crispr <-
     crispr_22Q1() %>% dplyr::select(c("cell_line", "gene_name", "entrez_id", "dependency")) %>%
-    dplyr::filter(!is.na(dependency))
+    dplyr::filter(!is.na(dependency)) %>%
+    dplyr::filter(!is.na(entrez_id)) %>%
+    distinct(cell_line, gene_name, .keep_all = TRUE)
 }
-test <- as.data.frame(table(unique(depmap_crispr_data$cell_line)))
+
 depmap_crispr_site_to_column <- function(depmap_crispr_data) {
   df <- depmap_crispr_data %>%
     pivot_wider(
@@ -22,7 +24,9 @@ load_depmap_rnai_data <- function() {
     depmap_rnai() %>% dplyr::select(c("cell_line", "gene_name", "entrez_id", "dependency")) %>%
     dplyr::filter(!is.na(dependency)) %>%
     mutate(gene_name = str_split(gene_name, ";") %>% purrr::map_chr(1)) %>%
-    mutate(entrez_id = str_split(entrez_id, ";") %>% purrr::map_chr(1))
+    mutate(entrez_id = str_split(entrez_id, ";") %>% purrr::map_chr(1)) %>%
+    dplyr::filter(!is.na(entrez_id)) %>%
+    distinct(cell_line, gene_name, .keep_all = TRUE)
 }
 
 depmap_rnai_site_to_column <- function(depmap_rnai_data) {
