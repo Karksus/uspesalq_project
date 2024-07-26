@@ -25,5 +25,7 @@ format_oncokb_data <- function(oncokb_data) {
       highestResistanceLevel = highestResistanceLevel,
       tsg = tsg
     ) %>%
-    mutate(across(where(is.character), ~ na_if(., "")))
+    mutate(across(where(is.character), ~ na_if(., ""))) %>%
+    mutate(entrez_id = as.character(entrez_id)) %>%
+    rename_with(~ paste0("oncokb_", .), -entrez_id)
 }

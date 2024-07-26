@@ -15,8 +15,9 @@ get_entrez_gene_data <- function() {
     ) %>%
     dplyr::rename(entrez_id = entrezgene_id, gene_symbol = hgnc_symbol) %>%
     dplyr::filter(!is.na(entrez_id) & !is.na(gene_symbol))
-  annotated_genes <- annotated_genes[!duplicated(annotated_genes$gene_symbol),]
-    
+  annotated_genes <-
+    annotated_genes[!duplicated(annotated_genes$gene_symbol), ]
+  
 }
 
 load_and_format_pubmed_data <- function(pubmed_path) {
@@ -33,12 +34,12 @@ merge_entrez_pubmed <- function(pubmed_data, entrez_data) {
     inner_join(entrez_data, by = "gene_symbol") %>%
     dplyr::select(-search_term) %>%
     distinct(gene_symbol, entrez_id, year, .keep_all = TRUE) %>%
-    pivot_wider(
-      names_from = year,
-      values_from = count
-    )
+    pivot_wider(names_from = year,
+                values_from = count) %>%
+    mutate(entrez_id = as.character(entrez_id)) %>%
+    rename_with(~ paste0("pubmed_", .), -entrez_id)
 }
 
 final_gene_list <- function(df_merged) {
-  genelist <- unique(df_merged$gene_symbol)
+  genelist <- unique(df_merged$pubmed_gene_symbol)
 }
