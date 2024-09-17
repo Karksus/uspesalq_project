@@ -1,11 +1,10 @@
-library(httr)
 library(dplyr)
 library(arrow)
 library(data.table)
 library(tidyr)
 library(tidyverse)
-library(caret)
-###############################COMSIC###########################################
+library(fastDummies)
+
 get_cosmic_target_data <- function(targeted_path) {
   valid_mut_type <-
     c(
@@ -44,7 +43,6 @@ get_cosmic_target_data <- function(targeted_path) {
     setDT()
 }
 
-# Read and filter genome data
 get_cosmic_wgs_data <- function(wgs_path) {
   valid_mut_type <-
     c(
@@ -119,7 +117,6 @@ calculate_wgs_counts <- function(genome_data) {
   ), by = .(GENE_SYMBOL, PRIMARY_SITE)]
 }
 merge_counts <- function(target_counts, genome_counts) {
-  # Merge counts into a single table
   gene_counts <-
     merge(
       target_counts,
@@ -150,16 +147,6 @@ load_cgc_futreal_data <- function(cgc_futreal_path) {
   df <- read.csv(cgc_futreal_path, sep = ";")
 }
 
-load_hallmarks_data <- function(hallmarks_path) {
-  hallmarks_data <-
-    arrow::open_dataset(hallmarks_path, format = "tsv") %>%
-    dplyr::select(c("GENE_SYMBOL", "HALLMARK")) %>%
-    collect() %>%
-    setDT()
-  hallmarks_data[, HALLMARK := "yes"]
-  hallmarks_data <- unique(hallmarks_data, by = "GENE_SYMBOL")
-}
-
 annotate_cosmic_freq_data <- function(cosmic_data, entrez_data) {
   df_merged <- cosmic_data %>%
     dplyr::rename(gene_symbol = GENE_SYMBOL) %>%
@@ -171,14 +158,6 @@ merge_cosmic_freq_cgc <-
     cgc_data <- cgc_data %>% dplyr::rename(gene_symbol = GENE_SYMBOL)
     df_merged <- annotated_cosmic_freq_data %>%
       left_join(cgc_data, by = "gene_symbol")
-  }
-
-merge_cosmic_freq_hallmarks <-
-  function(merged_cosmic_freq_cgc, hallmarks_data) {
-    hallmarks_data <-
-      hallmarks_data %>% dplyr::rename(gene_symbol = GENE_SYMBOL)
-    df_merged <- merged_cosmic_freq_cgc %>%
-      left_join(hallmarks_data, by = "gene_symbol")
   }
 
 cosmic_site_to_column <- function(merged_cosmic_freq) {
@@ -198,17 +177,24 @@ cosmic_site_to_column <- function(merged_cosmic_freq) {
 merge_cosmic_data <- function(cosmic_wider, cgc_futreal_data) {
   df <- cosmic_wider %>%
     full_join(cgc_futreal_data, by = "entrez_id") %>%
-    mutate(
-      cgc_status = case_when(
-        is.na(ROLE_IN_CANCER) &
-          !is.na(is_cgc) ~ "new_cgc",!is.na(ROLE_IN_CANCER) &
-          is.na(is_cgc) ~ "old_cgc",
-        is.na(ROLE_IN_CANCER) &
-          is.na(is_cgc) ~ "never_cgc",!is.na(ROLE_IN_CANCER) &
-          !is.na(is_cgc) ~ "all_cgc"
-      )
-    ) %>%
+    mutate(cgc_status = case_when(
+      !is.na(ROLE_IN_CANCER) |
+        !is.na(is_cgc) ~ "true",
+      is.na(ROLE_IN_CANCER) &
+        is.na(is_cgc) ~ "false"
+    )) %>%
     dplyr::select(-c(ROLE_IN_CANCER), is_cgc) %>%
     mutate(entrez_id = as.character(entrez_id)) %>%
-    rename_with(~ paste0("cosmic_", .), -entrez_id)
+    rename_with(~ paste0("cosmic_", .), -entrez_id) %>%
+    dplyr::filter(!is.na(entrez_id))
+}
+
+dummify_cosmic_data <- function(df) {
+  df_dummified <- df %>%
+    fastDummies::dummy_cols(
+      select_columns = c("cosmic_is_cgc",
+                         "cosmic_HALLMARK"),
+      remove_selected_columns = TRUE,
+      remove_first_dummy = TRUE
+    )
 }

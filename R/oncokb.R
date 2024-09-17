@@ -1,6 +1,7 @@
 library(httr)
 library(dplyr)
-###############################ONCOKB###########################################
+library(jsonlite)
+
 get_oncokb_data <- function(url) {
   onco_kb_data <- GET(url) %>%
     httr::content("text") %>%
@@ -9,23 +10,31 @@ get_oncokb_data <- function(url) {
 
 format_oncokb_data <- function(oncokb_data) {
   oncokb_data <- oncokb_data %>%
-    dplyr::select(
-      entrezGeneId,
-      hugoSymbol,
-      oncogene,
-      highestSensitiveLevel,
-      highestResistanceLevel,
-      tsg
-    ) %>%
+    dplyr::select(entrezGeneId,
+                  hugoSymbol,
+                  highestSensitiveLevel,
+                  highestResistanceLevel) %>%
     dplyr::rename(
       entrez_id = entrezGeneId,
       gene = hugoSymbol,
-      oncogene = oncogene,
       highestSensitiveLevel = highestSensitiveLevel,
       highestResistanceLevel = highestResistanceLevel,
-      tsg = tsg
     ) %>%
     mutate(across(where(is.character), ~ na_if(., ""))) %>%
     mutate(entrez_id = as.character(entrez_id)) %>%
-    rename_with(~ paste0("oncokb_", .), -entrez_id)
+    rename_with(~ paste0("oncokb_", .), -entrez_id) %>%
+    dplyr::filter(!is.na(entrez_id))
+}
+
+dummify_oncokb_data <- function(df) {
+  df_dummified <- df %>%
+    fastDummies::dummy_cols(
+      select_columns = c(
+        "oncokb_highestResistanceLevel",
+        "oncokb_highestSensitiveLevel"
+      ),
+      remove_selected_columns = TRUE,
+      remove_first_dummy = TRUE
+    )
+  
 }
