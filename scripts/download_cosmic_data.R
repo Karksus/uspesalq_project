@@ -4,10 +4,8 @@ library(dplyr)
 library(base64enc)
 library(R.utils)
 
-# Load environment variables
 dotenv::load_dot_env()
 
-# Define functions
 get_cosmic_encoded <- function() {
   cosmic_mail <- Sys.getenv("COSMIC_EMAIL")
   cosmic_pass <- Sys.getenv("COSMIC_PASSWORD")

@@ -16,7 +16,7 @@ get_entrez_gene_data <- function() {
     dplyr::rename(entrez_id = entrezgene_id, gene_symbol = hgnc_symbol) %>%
     dplyr::filter(!is.na(entrez_id) & !is.na(gene_symbol))
   annotated_genes <-
-    annotated_genes[!duplicated(annotated_genes$gene_symbol),]
+    annotated_genes[!duplicated(annotated_genes$gene_symbol), ]
   
 }
 
@@ -37,7 +37,7 @@ merge_entrez_pubmed <- function(pubmed_data, entrez_data) {
     pivot_wider(names_from = year,
                 values_from = count) %>%
     mutate(entrez_id = as.character(entrez_id)) %>%
-    rename_with( ~ paste0("pubmed_", .),-entrez_id) %>%
+    rename_with(~ paste0("pubmed_", .), -entrez_id) %>%
     dplyr::filter(!is.na(entrez_id))
   
 }

@@ -55,7 +55,7 @@ if (file.exists(results_filepath)) {
 # Filter combinations that have not been processed
 processed_terms <- results$search_term
 pending_combinations <-
-  combinations[!combinations$search_term %in% processed_terms, ]
+  combinations[!combinations$search_term %in% processed_terms,]
 
 # Process and save periodically
 for (i in 1:nrow(pending_combinations)) {

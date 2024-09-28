@@ -22,7 +22,7 @@ format_oncokb_data <- function(oncokb_data) {
     ) %>%
     mutate(across(where(is.character), ~ na_if(., ""))) %>%
     mutate(entrez_id = as.character(entrez_id)) %>%
-    rename_with(~ paste0("oncokb_", .), -entrez_id) %>%
+    rename_with( ~ paste0("oncokb_", .),-entrez_id) %>%
     dplyr::filter(!is.na(entrez_id))
 }
 

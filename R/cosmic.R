@@ -185,7 +185,7 @@ merge_cosmic_data <- function(cosmic_wider, cgc_futreal_data) {
     )) %>%
     dplyr::select(-c(ROLE_IN_CANCER), is_cgc) %>%
     mutate(entrez_id = as.character(entrez_id)) %>%
-    rename_with(~ paste0("cosmic_", .), -entrez_id) %>%
+    rename_with( ~ paste0("cosmic_", .),-entrez_id) %>%
     dplyr::filter(!is.na(entrez_id))
 }
 
