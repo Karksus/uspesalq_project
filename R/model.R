@@ -1,15 +1,12 @@
 library(tidymodels)
-library(rpart.plot)
 library(nnet)
 library(caret)
 library(randomForest)
-library(Boruta)
 library(ggplot2)
 library(purrr)
 library(dplyr)
 library(data.table)
 library(glmnet)
-#library(car)
 
 merge_all_data <-
   function(pubmed_final_df,
