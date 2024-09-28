@@ -1,8 +1,15 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|bf10329c2ac5a272|||||||||||||||
+.Random.seed|object|9b68929d30773f1c|||||||||||||||
 annotate_clinicaltrials_data|function|235d0b26bc837bcf|||||||||||||||
 annotate_cosmic_freq_data|function|8a7021681a601b4d|||||||||||||||
+boruta_feature_selection|function|585427db62a160fa|||||||||||||||
+boruta_filtered_test_dataset|stem|43607d99856ae933|4f047263b58f1d1b|695bbde2cbc124d5|-7011203||t19990.0131262402s|376d50965914e8cd|1559840|qs|local|vector|||0.047||
+boruta_filtered_train_dataset|stem|1a036d9164674b77|02ee79c89772d17c|4c089e3820a4d47b|1046951396||t19990.0131819477s|85ad2114b048f81a|3614250|qs|local|vector|||0.032||
+boruta_relevant_features|stem|9d9b6af5ff2ad549|3ee49ed965273ac1|e49e91e5a71108c5|-535742318||t19989.1213639649s|425d75d207023dce|3984|qs|local|vector|||23439.813||
+build_elasticnet_model|function|29786cb9f3a9c037|||||||||||||||
 build_model|function|20149bf0b0c3132e|||||||||||||||
+build_post_vif_binom_model|function|0691d5fc0d498693|||||||||||||||
+build_pre_vif_binom_model|function|20149bf0b0c3132e|||||||||||||||
 calculate_cagr|function|7d751315689796fa|||||||||||||||
 calculate_cagr_pubmed|function|bd4d0f3fa570bf1e|||||||||||||||
 calculate_cosmic_frequency|function|fc43cd193e6b6df7|||||||||||||||
@@ -18,11 +25,16 @@ dummify_cosmic_data|function|aeac9a4dbc4789f1|||||||||||||||
 dummify_depmap_crispr|function|a446f6cdf04ce349|||||||||||||||
 dummify_depmap_rnai|function|5ed902c3a66e162e|||||||||||||||
 dummify_oncokb_data|function|de023f5a7422a1c9|||||||||||||||
+elasticnet_model|stem|39843003d12591fa|fe88f1fafb7dc184|54a1c57185483f5b|-765755686||t19991.0363320922s|8c5dbf386fa498f4|371194|qs|local|vector|||588.313||
 extract_test_dataset|function|6c4694b42f27a472|||||||||||||||
 extract_train_dataset|function|4d01a1e9e04b5c10|||||||||||||||
+extract_vif_variables|function|407494d718e03b47|||||||||||||||
 feature_selection|function|585427db62a160fa|||||||||||||||
+filter_by_boruta_relevant_feature|function|37c8226225a2e5d9|||||||||||||||
 filter_by_relevant_feature|function|37c8226225a2e5d9|||||||||||||||
 filter_depmap_crispr|function|0bb005012b43447a|||||||||||||||
+filter_test_by_boruta_relevant_feature|function|a9d43088149a3c90|||||||||||||||
+filter_train_by_boruta_relevant_feature|function|1ba9e13022351f28|||||||||||||||
 final_gene_list|function|34abae6d32d17393|||||||||||||||
 format_oncokb_data|function|fe73d8781eb1f6dc|||||||||||||||
 genes_as_index|function|755b7f8562c50464|||||||||||||||
@@ -44,18 +56,22 @@ merge_cosmic_data|function|d1b2daeae367f672|||||||||||||||
 merge_cosmic_freq_cgc|function|63b0f5e3c3bbf7dc|||||||||||||||
 merge_counts|function|529c6de637b88be4|||||||||||||||
 merge_entrez_pubmed|function|7f1f372b43136bab|||||||||||||||
+min_max_scale|function|49c7feec118a154e|||||||||||||||
 model|stem|808c34e6dcbc4fdd|1462cb256323c23a|fb3e344bc60868e0|808688450||t19983.102967458s|7606bb0ee1d224c0|74680885|qs|local|vector|||14.422|glm.fit algoritmo não convergiu. glm.fit probabilidades ajustadas numericamente 0 ou 1 ocorreu|
 no_constants_dataset|stem|f76dcf7c55597af4|b820523234d7eacd|66571905fd5b8ad3|860748391||t19981.8825389717s|b2ac92f524ab012f|18944533|qs|local|vector|||21.812||
 object_from_project_prepare_model|object|274b67df5ab3eaeb|||||||||||||||
+post_vif_boruta_binom_model|stem|972cadae48e5ac81|cd116d9f70b8ecf4|afbe9c16ebc1d93a|1908001078||t19990.9500284731s|57812d0610faed8e|29019003|qs|local|vector|||2.828|glm.fit probabilidades ajustadas numericamente 0 ou 1 ocorreu|
+pre_vif_boruta_binom_model|stem|d15b40ae5b751b26|21acf18c4af14bb9|e304c2fa50252969|-434159845||t19990.0138517664s|b4339f732889dc23|64779948|qs|local|vector|||55.406|glm.fit algoritmo não convergiu. glm.fit probabilidades ajustadas numericamente 0 ou 1 ocorreu|
 relevant_features_dataset|stem|f1195730f6fc8180|813c0ad90aeb35b8|613d26f87ef98f3c|1188559373||t19982.0662283293s|c5bc7d4a601e380e|3694|qs|local|vector|||15526.094||
 relevant_features_filtered_dataset|stem|c9ec645048b230b0|021478d4249df269|a4c71dd430fd643d|868386097||t19983.1027676035s|bb574fe19a91d930|7843865|qs|local|vector|||0.016||
 remove_constants|function|11c3aff80e9e6c6e|||||||||||||||
 remove_na_cosmic_cgc|function|dd02625229135eb9|||||||||||||||
 remove_na_entrez|function|0a6994d8392db135|||||||||||||||
-scale_dataset|function|8939a15e4fbac475|||||||||||||||
-scaled_dataset|stem|22b5eab25c18a579|664b8081327dc7b3|a4e00ddd2b9046fe|-273354897||t19981.8864913132s|1f26da586c070b8d|73384213|qs|local|vector|||11.891||
+scale_dataset|function|9ff6ef4f483392e8|||||||||||||||
+scaled_dataset|stem|96c1bfe55305fcb3|664b8081327dc7b3|bfe725c075958dce|-273354897||t19988.7693015626s|f17d4e07eb28c0d3|21563017|qs|local|vector|||3.5||
 split_dataset_train_test|function|804a5145bb289d87|||||||||||||||
-splitted_train_test_dataset|stem|1882e8456ddc4125|a3c4eeb2b8ad669d|af973f608c3b84ec|-413829807||t19983.1027795407s|c9661f23a98912cb|8396026|qs|local|vector|||0.078||
-test_dataset|stem|7b42d93bc9e538a7|da287bdf4283580c|7d6989c10bdb86bb|1848661655||t19983.102781716s|457771d83e362a73|2554118|qs|local|vector|||0||
-train_dataset|stem|1d93cfd4a4f94f70|26182e8476765a04|675df123941fad3c|573568920||t19983.102785018s|c823211534d94fac|5841726|qs|local|vector|||0||
+splitted_train_test_dataset|stem|62ff2450080d7b0f|3b1572203b8e5644|5aec0b09cf0306a8|-413829807||t19988.8500211993s|1f6988edbd8c67e4|22704270|qs|local|vector|||2.094||
+test_dataset|stem|1ebe926d02f01570|da287bdf4283580c|c11757931b3fcda2|1848661655||t19989.1218709981s|dcb2a02a732a16a3|6269687|qs|local|vector|||0.047||
+train_dataset|stem|455f1d4de90f88dc|26182e8476765a04|f270e38dc6192892|573568920||t19989.1219812732s|fc81bf30b112bba7|16433163|qs|local|vector|||0.031||
 treat_na_values|function|2428341152cf0552|||||||||||||||
+vif_boruta_binom_model_variables|stem|5e5bf607bc5608c5|cc33e70fce0c62f4|bcb292aabad79759|-1647786609||t19990.0138791641s|ddfbd5fd0a8a706d|1002|qs|local|vector|||1.531||

@@ -9,8 +9,8 @@ tar_option_set(
     "tidymodels",
     "caret",
     "randomForest",
-    "Boruta",
-    "rsample"
+    "rsample",
+    "glmnet"
   ),
   memory = "transient"
 )
@@ -30,18 +30,8 @@ list(
              scale_dataset(no_constants_dataset),
              format = "qs"),
   tar_target(
-    relevant_features_dataset,
-    feature_selection(scaled_dataset),
-    format = "qs"
-  ),
-  tar_target(
-    relevant_features_filtered_dataset,
-    filter_by_relevant_feature(scaled_dataset, relevant_features_dataset),
-    format = "qs"
-  ),
-  tar_target(
     splitted_train_test_dataset,
-    split_dataset_train_test(relevant_features_filtered_dataset),
+    split_dataset_train_test(scaled_dataset),
     format = "qs"
   ),
   tar_target(
@@ -55,8 +45,13 @@ list(
     format = "qs"
   ),
   tar_target(
-    model,
-    build_model(train_dataset),
+    training_elasticnet_model,
+    build_elasticnet_model(train_dataset),
+    format = "qs"
+  ),
+  tar_target(
+    training_elasticnet_model_coeffs,
+    get_elasticnet_best_lambda_coeffs(training_elasticnet_model),
     format = "qs"
   )
 )

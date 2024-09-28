@@ -2,14 +2,12 @@ library(targets)
 library(qs)
 
 tar_option_set(
-  packages = c(
-    "dplyr",
-    "stringr",
-    "biomaRt",
-    "depmap",
-    "purrr",
-    "fastDummies"
-  ),
+  packages = c("dplyr",
+               "stringr",
+               "biomaRt",
+               "depmap",
+               "purrr",
+               "fastDummies"),
   memory = "transient"
 )
 
@@ -19,9 +17,11 @@ list(
   tar_target(depmap_crispr_data,
              load_depmap_crispr_data(),
              format = "qs"),
-  tar_target(depmap_filtered_crispr_data,
-             filter_depmap_crispr(depmap_crispr_data),
-             format = "qs"),
+  tar_target(
+    depmap_filtered_crispr_data,
+    filter_depmap_crispr(depmap_crispr_data),
+    format = "qs"
+  ),
   tar_target(
     pivot_wider_depmap_crispr,
     depmap_crispr_site_to_column(depmap_filtered_crispr_data),

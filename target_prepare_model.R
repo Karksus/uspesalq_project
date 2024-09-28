@@ -9,7 +9,6 @@ tar_option_set(
     "tidymodels",
     "caret",
     "randomForest",
-    "Boruta",
     "rsample",
     "data.table"
   ),

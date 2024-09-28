@@ -1,14 +1,10 @@
 library(targets)
 library(qs)
 
-tar_option_set(
-  packages = c(
-    "dplyr",
-    "httr",
-    "jsonlite"
-  ),
-  memory = "transient"
-)
+tar_option_set(packages = c("dplyr",
+                            "httr",
+                            "jsonlite"),
+               memory = "transient")
 
 tar_source("R/")
 
@@ -20,11 +16,9 @@ list(
     ),
     format = "qs"
   ),
-  tar_target(
-    formatted_oncokb,
-    format_oncokb_data(oncokb_data),
-    format = "qs"
-  ),
+  tar_target(formatted_oncokb,
+             format_oncokb_data(oncokb_data),
+             format = "qs"),
   tar_target(
     dummified_oncokb,
     dummify_oncokb_data(formatted_oncokb),

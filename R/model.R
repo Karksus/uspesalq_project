@@ -1,16 +1,12 @@
 library(tidymodels)
-library(rpart.plot)
 library(nnet)
 library(caret)
 library(randomForest)
-library(Boruta)
 library(ggplot2)
 library(purrr)
 library(dplyr)
 library(data.table)
-# library(h2o)
-# library(detectseparation)
-# TODO: this is a mess, will deal with this soon
+library(glmnet)
 
 merge_all_data <-
   function(pubmed_final_df,
@@ -64,19 +60,15 @@ remove_na_cosmic_cgc <- function(df) {
     dplyr::filter(!is.na(cosmic_cgc_status))
 }
 
-# genes_as_index <- function(df) {
-#   df <- df %>%
-#     mutate(pubmed_gene_symbol = replace_na(pubmed_gene_symbol, "no_data")) %>%
-#     distinct(pubmed_gene_symbol, .keep_all = TRUE) %>%
-#     column_to_rownames(var = "pubmed_gene_symbol") %>%
-#     dplyr::select(-entrez_id)
-# }
-
 remove_constants <- function(df) {
   df <- df %>%
     select_if( ~ !all(is.na(.))) %>%
     select_if(function(col)
       length(unique(col)) > 1)
+}
+
+min_max_scale <- function(x) {
+  (x - min(x, na.rm = TRUE)) / (max(x, na.rm = TRUE) - min(x, na.rm = TRUE))
 }
 
 scale_dataset <- function(dataset) {
@@ -86,34 +78,36 @@ scale_dataset <- function(dataset) {
     )))
   df_others <- dataset %>%
     dplyr::select(-c(cosmic_cgc_status, pubmed_gene_symbol, entrez_id))
-  df_others <- scale(df_others)
-  
-  scaled_df <- cbind(df_main_var, df_others)
+  scaled_df <- as.data.frame(lapply(df_others, min_max_scale))
+  scaled_df <- cbind(df_main_var, scaled_df)
 }
 
-feature_selection <- function(df) {
-  df$cosmic_cgc_status <- as.factor(df$cosmic_cgc_status)
-  df <- df %>%
-    dplyr::select(-c(pubmed_gene_symbol, entrez_id))
-  importances <-
-    Boruta(cosmic_cgc_status ~ ., data = df, doTrace = 0) %>%
-    TentativeRoughFix() %>%
-    attStats() %>%
-    dplyr::filter(decision != "Rejected") %>%
-    dplyr::select(meanImp, decision) %>%
-    arrange(desc(meanImp))
-}
-
-filter_by_relevant_feature <- function(df, relevant_features) {
-  df <- df %>%
-    dplyr::select(all_of(c(
-      rownames(relevant_features),
-      "pubmed_gene_symbol",
-      "entrez_id",
-      "cosmic_cgc_status"
-    )))
-}
-
+# boruta_feature_selection <- function(df) {
+#   df$cosmic_cgc_status <- as.factor(df$cosmic_cgc_status)
+#   df <- df %>%
+#     dplyr::select(-c(pubmed_gene_symbol, entrez_id))
+#   importances <-
+#     Boruta(cosmic_cgc_status ~ ., data = df, doTrace = 0) %>%
+#     TentativeRoughFix() %>%
+#     attStats() %>%
+#     dplyr::filter(decision != "Rejected") %>%
+#     dplyr::select(meanImp, decision) %>%
+#     arrange(desc(meanImp))
+# }
+#
+# filter_by_boruta_relevant_feature <-
+#   function(df, relevant_features) {
+#     df <- df %>%
+#       dplyr::select(all_of(
+#         c(
+#           rownames(relevant_features),
+#           "pubmed_gene_symbol",
+#           "entrez_id",
+#           "cosmic_cgc_status"
+#         )
+#       ))
+#   }
+#
 split_dataset_train_test <- function(df) {
   df$cosmic_cgc_status <- as.factor(df$cosmic_cgc_status)
   set.seed(123)
@@ -122,40 +116,80 @@ split_dataset_train_test <- function(df) {
   test_data <- rsample::testing(data_split)
   train_test_list <- list(train_data, test_data)
 }
-
+#
 extract_train_dataset <- function(train_test_list) {
   train_dataset <- train_test_list[[1]]
 }
+#
+# filter_train_by_boruta_relevant_feature <-
+#   function(train_df, relevant_features) {
+#     df <- train_df %>%
+#       dplyr::select(all_of(
+#         c(
+#           rownames(relevant_features),
+#           "pubmed_gene_symbol",
+#           "entrez_id",
+#           "cosmic_cgc_status"
+#         )
+#       ))
+#   }
 
 extract_test_dataset <- function(train_test_list) {
   test_dataset <- train_test_list[[2]]
 }
 
-build_model <- function(train_df) {
-  df <- train_df %>%
-    dplyr::select(-c(pubmed_gene_symbol, entrez_id))
-  m2 <- glm(cosmic_cgc_status ~ .,
-            data = df,
-            family = "binomial")
-}
+# filter_test_by_boruta_relevant_feature <-
+#   function(test_df, relevant_features) {
+#     df <- test_df %>%
+#       dplyr::select(all_of(
+#         c(
+#           rownames(relevant_features),
+#           "pubmed_gene_symbol",
+#           "entrez_id",
+#           "cosmic_cgc_status"
+#         )
+#       ))
+#   }
+#
+# build_pre_vif_binom_model <- function(train_df) {
+#   df <- train_df %>%
+#     dplyr::select(-c(pubmed_gene_symbol, entrez_id))
+#   m2 <- glm(cosmic_cgc_status ~ .,
+#             data = df,
+#             family = "binomial")
+# }
+#
+# extract_vif_variables <- function(model) {
+#   vif_variables <- car::vif(model) %>%
+#     Filter(function(vif)
+#       vif <= 10, .) %>%
+#     names()
+# }
+#
+# build_post_vif_binom_model <- function(df, vif_vars) {
+#   df <- df %>%
+#     dplyr::select(-c(pubmed_gene_symbol, entrez_id)) %>%
+#     dplyr::select(all_of(c(vif_vars,"cosmic_cgc_status")))
+#   m2 <- glm(cosmic_cgc_status ~ .,
+#             data = df,
+#             family = "binomial")
+# }
 
 #some tests to implement and elastic net model to make target
 
-# plot(model,3)
-# library(car)
-# vif <- car::vif(model)
-# filtered_vif <- Filter(function(vif) vif <= 10, vif)
-# names(filtered_vif)
+build_elasticnet_model <- function(scaled_dataset) {
+  df_nodepenvar <- scaled_dataset %>%
+    dplyr::select(-c(pubmed_gene_symbol, entrez_id, cosmic_cgc_status))
+  
+  X <- as.matrix(df_nodepenvar)
+  y <- scaled_dataset$cosmic_cgc_status
+  
+  cv_elastic_net <-
+    cv.glmnet(X, y, alpha = 0.5, family = "binomial")
+}
 
-library(glmnet)
-df_nodepenvar <- relevant_features_filtered_dataset %>%
-  select(-c(pubmed_gene_symbol, entrez_id, cosmic_cgc_status))
-
-X <- as.matrix(df_nodepenvar)
-y <- relevant_features_filtered_dataset$cosmic_cgc_status
-
-elastic_net_model <- glmnet(X, y, family = "binomial", alpha = 0.5)
-cv_elastic_net <- cv.glmnet(X, y, alpha = 0.5, family = "binomial")
-
-best_lambda <- cv_elastic_net$lambda.min
-elastic_net_coefficients <- coef(cv_elastic_net, s = best_lambda)
+get_elasticnet_best_lambda_coeffs <- function(elasticnet_model) {
+  best_lambda <- elasticnet_model$lambda.min
+  elastic_net_coefficients <-
+    coef(elasticnet_model, s = best_lambda)
+}
