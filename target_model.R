@@ -46,12 +46,41 @@ list(
   ),
   tar_target(
     training_elasticnet_model,
-    build_elasticnet_model(train_dataset),
+    build_train_elasticnet_model(train_dataset),
     format = "qs"
   ),
   tar_target(
-    training_elasticnet_model_coeffs,
-    get_elasticnet_best_lambda_coeffs(training_elasticnet_model),
+    training_elasticnet_model_lambda_coeffs,
+    get_training_elasticnet_best_lambda_coeffs(training_elasticnet_model),
+    format = "qs"
+  ),
+  tar_target(
+    train_elasticnet_model_prediction,
+    predict_train_elasticnet_model(
+      train_dataset,
+      training_elasticnet_model,
+      training_elasticnet_model_lambda_coeffs
+    ),
+    format = "qs"
+  ),
+  tar_target(
+    test_elasticnet_model,
+    build_test_elasticnet_model(test_dataset),
+    format = "qs"
+  ),
+  
+  tar_target(
+    test_elasticnet_model_lambda_coeffs,
+    get_test_elasticnet_best_lambda_coeffs(test_elasticnet_model),
+    format = "qs"
+  ),
+  tar_target(
+    test_elasticnet_model_prediction,
+    predict_test_elasticnet_model(
+      test_dataset,
+      test_elasticnet_model,
+      test_elasticnet_model_lambda_coeffs
+    ),
     format = "qs"
   )
 )

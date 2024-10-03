@@ -62,7 +62,7 @@ remove_na_cosmic_cgc <- function(df) {
 
 remove_constants <- function(df) {
   df <- df %>%
-    select_if( ~ !all(is.na(.))) %>%
+    select_if(~ !all(is.na(.))) %>%
     select_if(function(col)
       length(unique(col)) > 1)
 }
@@ -82,32 +82,6 @@ scale_dataset <- function(dataset) {
   scaled_df <- cbind(df_main_var, scaled_df)
 }
 
-# boruta_feature_selection <- function(df) {
-#   df$cosmic_cgc_status <- as.factor(df$cosmic_cgc_status)
-#   df <- df %>%
-#     dplyr::select(-c(pubmed_gene_symbol, entrez_id))
-#   importances <-
-#     Boruta(cosmic_cgc_status ~ ., data = df, doTrace = 0) %>%
-#     TentativeRoughFix() %>%
-#     attStats() %>%
-#     dplyr::filter(decision != "Rejected") %>%
-#     dplyr::select(meanImp, decision) %>%
-#     arrange(desc(meanImp))
-# }
-#
-# filter_by_boruta_relevant_feature <-
-#   function(df, relevant_features) {
-#     df <- df %>%
-#       dplyr::select(all_of(
-#         c(
-#           rownames(relevant_features),
-#           "pubmed_gene_symbol",
-#           "entrez_id",
-#           "cosmic_cgc_status"
-#         )
-#       ))
-#   }
-#
 split_dataset_train_test <- function(df) {
   df$cosmic_cgc_status <- as.factor(df$cosmic_cgc_status)
   set.seed(123)
@@ -116,80 +90,76 @@ split_dataset_train_test <- function(df) {
   test_data <- rsample::testing(data_split)
   train_test_list <- list(train_data, test_data)
 }
-#
+
 extract_train_dataset <- function(train_test_list) {
   train_dataset <- train_test_list[[1]]
 }
-#
-# filter_train_by_boruta_relevant_feature <-
-#   function(train_df, relevant_features) {
-#     df <- train_df %>%
-#       dplyr::select(all_of(
-#         c(
-#           rownames(relevant_features),
-#           "pubmed_gene_symbol",
-#           "entrez_id",
-#           "cosmic_cgc_status"
-#         )
-#       ))
-#   }
 
 extract_test_dataset <- function(train_test_list) {
   test_dataset <- train_test_list[[2]]
 }
 
-# filter_test_by_boruta_relevant_feature <-
-#   function(test_df, relevant_features) {
-#     df <- test_df %>%
-#       dplyr::select(all_of(
-#         c(
-#           rownames(relevant_features),
-#           "pubmed_gene_symbol",
-#           "entrez_id",
-#           "cosmic_cgc_status"
-#         )
-#       ))
-#   }
-#
-# build_pre_vif_binom_model <- function(train_df) {
-#   df <- train_df %>%
-#     dplyr::select(-c(pubmed_gene_symbol, entrez_id))
-#   m2 <- glm(cosmic_cgc_status ~ .,
-#             data = df,
-#             family = "binomial")
-# }
-#
-# extract_vif_variables <- function(model) {
-#   vif_variables <- car::vif(model) %>%
-#     Filter(function(vif)
-#       vif <= 10, .) %>%
-#     names()
-# }
-#
-# build_post_vif_binom_model <- function(df, vif_vars) {
-#   df <- df %>%
-#     dplyr::select(-c(pubmed_gene_symbol, entrez_id)) %>%
-#     dplyr::select(all_of(c(vif_vars,"cosmic_cgc_status")))
-#   m2 <- glm(cosmic_cgc_status ~ .,
-#             data = df,
-#             family = "binomial")
-# }
-
-#some tests to implement and elastic net model to make target
-
-build_elasticnet_model <- function(scaled_dataset) {
-  df_nodepenvar <- scaled_dataset %>%
+build_train_elasticnet_model <- function(train_dataset) {
+  df_nodepenvar <- train_dataset %>%
     dplyr::select(-c(pubmed_gene_symbol, entrez_id, cosmic_cgc_status))
   
   X <- as.matrix(df_nodepenvar)
-  y <- scaled_dataset$cosmic_cgc_status
+  y <- train_dataset$cosmic_cgc_status
   
   cv_elastic_net <-
     cv.glmnet(X, y, alpha = 0.5, family = "binomial")
 }
 
-get_elasticnet_best_lambda_coeffs <- function(elasticnet_model) {
-  best_lambda <- elasticnet_model$lambda.min
-  elastic_net_coefficients <-
-    coef(elasticnet_model, s = best_lambda)
+get_training_elasticnet_best_lambda_coeffs <-
+  function(elasticnet_model) {
+    best_lambda <- elasticnet_model$lambda.min
+    elastic_net_coefficients <-
+      coef(elasticnet_model, s = best_lambda)
+    lambda_coeffs_list <- list(best_lambda, elastic_net_coefficients)
+  }
+
+build_test_elasticnet_model <- function(test_dataset) {
+  df_nodepenvar <- test_dataset %>%
+    dplyr::select(-c(pubmed_gene_symbol, entrez_id, cosmic_cgc_status))
+  
+  X <- as.matrix(df_nodepenvar)
+  y <- test_dataset$cosmic_cgc_status
+  
+  cv_elastic_net <-
+    cv.glmnet(X, y, alpha = 0.5, family = "binomial")
+}
+
+get_test_elasticnet_best_lambda_coeffs <-
+  function(elasticnet_model) {
+    best_lambda <- elasticnet_model$lambda.min
+    elastic_net_coefficients <-
+      coef(elasticnet_model, s = best_lambda)
+    lambda_coeffs_list <- list(best_lambda, elastic_net_coefficients)
+  }
+
+predict_train_elasticnet_model <-
+  function(train_dataset,
+           cv_elastic_net_train,
+           lambda_coeffs_list) {
+    best_lambda <- lambda_coeffs_list[[1]]
+    X_train <- train_dataset %>%
+      dplyr::select(-c(pubmed_gene_symbol, entrez_id, cosmic_cgc_status)) %>%
+      as.matrix()
+    predicted_probabilities_train <-
+      predict(cv_elastic_net_train,
+              newx = X_train,
+              s = best_lambda,
+              type = "response")
+    
+  }
+
+predict_test_elasticnet_model <-
+  function(test_dataset,
+           cv_elastic_net_test,
+           lambda_coeffs_list) {
+    best_lambda <- lambda_coeffs_list[[1]]
+    X_test <- test_dataset %>%
+      dplyr::select(-c(pubmed_gene_symbol, entrez_id, cosmic_cgc_status)) %>%
+      as.matrix()
+    predicted_probabilities_test <- predict(cv_elastic_net_test, newx = X_test, s = best_lambda, type = "response")
 }
