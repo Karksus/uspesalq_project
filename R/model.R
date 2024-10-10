@@ -7,18 +7,27 @@ library(purrr)
 library(dplyr)
 library(data.table)
 library(glmnet)
+library(pROC)
+
+# roc_test <- roc(test_elasticnet_model_prediction$cosmic_cgc_status,test_elasticnet_model_prediction$s1)
+# plot(roc_test, col = "blue", lwd = 2)
+# 
+# auc_value <- auc(roc_test)
+# print(auc_value)
 
 merge_all_data <-
   function(pubmed_final_df,
            clinicaltrials_final_df,
-           oncokb_final_df,
+           tcga_gtex_exp_final_df,
+           tcga_gtex_meth_final_df,
            cosmic_final_df,
            depmapcrispr_final_df,
            depmaprnai_final_df) {
     list_df = list(
       pubmed_final_df,
       clinicaltrials_final_df,
-      oncokb_final_df,
+      tcga_gtex_exp_final_df,
+      tcga_gtex_meth_final_df,
       cosmic_final_df,
       depmapcrispr_final_df,
       depmaprnai_final_df
@@ -62,7 +71,7 @@ remove_na_cosmic_cgc <- function(df) {
 
 remove_constants <- function(df) {
   df <- df %>%
-    select_if(~ !all(is.na(.))) %>%
+    select_if( ~ !all(is.na(.))) %>%
     select_if(function(col)
       length(unique(col)) > 1)
 }
@@ -115,7 +124,8 @@ get_training_elasticnet_best_lambda_coeffs <-
     best_lambda <- elasticnet_model$lambda.min
     elastic_net_coefficients <-
       coef(elasticnet_model, s = best_lambda)
-    lambda_coeffs_list <- list(best_lambda, elastic_net_coefficients)
+    lambda_coeffs_list <-
+      list(best_lambda, elastic_net_coefficients)
   }
 
 build_test_elasticnet_model <- function(test_dataset) {
@@ -134,7 +144,8 @@ get_test_elasticnet_best_lambda_coeffs <-
     best_lambda <- elasticnet_model$lambda.min
     elastic_net_coefficients <-
       coef(elasticnet_model, s = best_lambda)
-    lambda_coeffs_list <- list(best_lambda, elastic_net_coefficients)
+    lambda_coeffs_list <-
+      list(best_lambda, elastic_net_coefficients)
   }
 
 predict_train_elasticnet_model <-
@@ -142,6 +153,10 @@ predict_train_elasticnet_model <-
            cv_elastic_net_train,
            lambda_coeffs_list) {
     best_lambda <- lambda_coeffs_list[[1]]
+    df_main_var <- train_dataset %>%
+      dplyr::select(all_of(c(
+        "cosmic_cgc_status", "pubmed_gene_symbol", "entrez_id"
+      )))
     X_train <- train_dataset %>%
       dplyr::select(-c(pubmed_gene_symbol, entrez_id, cosmic_cgc_status)) %>%
       as.matrix()
@@ -150,7 +165,8 @@ predict_train_elasticnet_model <-
               newx = X_train,
               s = best_lambda,
               type = "response")
-    
+    final_df <-
+      cbind(df_main_var, predicted_probabilities_train, X_train)
   }
 
 predict_test_elasticnet_model <-
@@ -158,8 +174,18 @@ predict_test_elasticnet_model <-
            cv_elastic_net_test,
            lambda_coeffs_list) {
     best_lambda <- lambda_coeffs_list[[1]]
+    df_main_var <- test_dataset %>%
+      dplyr::select(all_of(c(
+        "cosmic_cgc_status", "pubmed_gene_symbol", "entrez_id"
+      )))
     X_test <- test_dataset %>%
       dplyr::select(-c(pubmed_gene_symbol, entrez_id, cosmic_cgc_status)) %>%
       as.matrix()
-    predicted_probabilities_test <- predict(cv_elastic_net_test, newx = X_test, s = best_lambda, type = "response")
-}
+    predicted_probabilities_test <-
+      predict(cv_elastic_net_test,
+              newx = X_test,
+              s = best_lambda,
+              type = "response")
+    final_df <-
+      cbind(df_main_var, predicted_probabilities_test, X_test)
+  }

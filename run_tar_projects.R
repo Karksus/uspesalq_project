@@ -3,6 +3,9 @@ library(targets)
 Sys.setenv(TAR_PROJECT = "project_cosmic")
 tar_make()
 
+Sys.setenv(TAR_PROJECT = "project_tcga_gtex")
+tar_make()
+
 Sys.setenv(TAR_PROJECT = "project_clinicaltrials")
 tar_make()
 
