@@ -10,12 +10,12 @@ project_cosmic:
 project_prepare_model:
   script: target_prepare_model.R
   store: store_prepare_model
-project_oncokb:
-  script: target_oncokb.R
-  store: store_oncokb
 project_model:
   script: target_model.R
   store: store_model
 project_depmap:
   script: target_depmap.R
   store: store_depmap
+project_tcga_gtex:
+  script: target_tcga_gtex.R
+  store: store_tcga_gtex

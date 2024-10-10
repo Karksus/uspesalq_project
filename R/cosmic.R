@@ -183,18 +183,8 @@ merge_cosmic_data <- function(cosmic_wider, cgc_futreal_data) {
       is.na(ROLE_IN_CANCER) &
         is.na(is_cgc) ~ "false"
     )) %>%
-    dplyr::select(-c(ROLE_IN_CANCER), is_cgc) %>%
+    dplyr::select(-c(ROLE_IN_CANCER, is_cgc)) %>%
     mutate(entrez_id = as.character(entrez_id)) %>%
     rename_with( ~ paste0("cosmic_", .),-entrez_id) %>%
     dplyr::filter(!is.na(entrez_id))
-}
-
-dummify_cosmic_data <- function(df) {
-  df_dummified <- df %>%
-    fastDummies::dummy_cols(
-      select_columns = c("cosmic_is_cgc",
-                         "cosmic_HALLMARK"),
-      remove_selected_columns = TRUE,
-      remove_first_dummy = TRUE
-    )
 }

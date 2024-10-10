@@ -93,10 +93,5 @@ list(
     merged_cosmic_data,
     merge_cosmic_data(pivot_wider_cosmic, cgc_futreal_data),
     format = "qs"
-  ),
-  tar_target(
-    dummified_cosmic_data,
-    dummify_cosmic_data(merged_cosmic_data),
-    format = "qs"
   )
 )
