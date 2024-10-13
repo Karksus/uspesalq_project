@@ -10,7 +10,8 @@ tar_option_set(
     "caret",
     "randomForest",
     "rsample",
-    "glmnet"
+    "glmnet",
+    "pROC"
   ),
   memory = "transient"
 )
@@ -64,6 +65,20 @@ list(
     format = "qs"
   ),
   tar_target(
+    roc_train_dataset,
+    make_roc_analisys_train_dataset(
+      train_elasticnet_model_prediction
+    ),
+    format = "qs"
+  ),
+  tar_target(
+    auc_plot_train_dataset,
+    make_auc_plot_train_dataset(
+      roc_train_dataset
+    ),
+    format = "qs"
+  ),
+  tar_target(
     test_elasticnet_model,
     build_test_elasticnet_model(test_dataset),
     format = "qs"
@@ -80,6 +95,20 @@ list(
       test_dataset,
       test_elasticnet_model,
       test_elasticnet_model_lambda_coeffs
+    ),
+    format = "qs"
+  ),
+  tar_target(
+    roc_test_dataset,
+    make_roc_analisys_test_dataset(
+      test_elasticnet_model_prediction
+    ),
+    format = "qs"
+  ),
+  tar_target(
+    auc_plot_test_dataset,
+    make_auc_plot_test_dataset(
+      roc_test_dataset
     ),
     format = "qs"
   )
