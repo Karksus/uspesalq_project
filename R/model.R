@@ -9,12 +9,6 @@ library(data.table)
 library(glmnet)
 library(pROC)
 
-# roc_test <- roc(test_elasticnet_model_prediction$cosmic_cgc_status,test_elasticnet_model_prediction$s1)
-# plot(roc_test, col = "blue", lwd = 2)
-# 
-# auc_value <- auc(roc_test)
-# print(auc_value)
-
 merge_all_data <-
   function(pubmed_final_df,
            clinicaltrials_final_df,
@@ -189,3 +183,55 @@ predict_test_elasticnet_model <-
     final_df <-
       cbind(df_main_var, predicted_probabilities_test, X_test)
   }
+
+make_roc_analisys_train_dataset <-
+  function(elasticnet_model_prediction) {
+    roc_data <-
+      roc(elasticnet_model_prediction$cosmic_cgc_status,
+          elasticnet_model_prediction$s1)
+  }
+
+make_roc_analisys_test_dataset <-
+  function(elasticnet_model_prediction) {
+    roc_data <-
+      roc(elasticnet_model_prediction$cosmic_cgc_status,
+          elasticnet_model_prediction$s1)
+  }
+
+make_auc_plot_train_dataset <- function(roc_data) {
+  auc_value <- auc(roc_data)
+  jpeg(
+    "plots/roc_train_plot.jpg",
+    width = 1200,
+    height = 800,
+    res = 300
+  )
+  plot(roc_data, col = "blue", lwd = 2)
+  text(
+    0.2,
+    0.2,
+    labels = paste("AUC =", round(auc_value, 3)),
+    col = "red",
+    cex = 0.8
+  )
+  dev.off()
+}
+
+make_auc_plot_test_dataset <- function(roc_data) {
+  auc_value <- auc(roc_data)
+  jpeg(
+    "plots/roc_test_plot.jpg",
+    width = 1200,
+    height = 800,
+    res = 300
+  )
+  plot(roc_data, col = "blue", lwd = 2)
+  text(
+    0.2,
+    0.2,
+    labels = paste("AUC =", round(auc_value, 3)),
+    col = "red",
+    cex = 0.8
+  )
+  dev.off()
+}

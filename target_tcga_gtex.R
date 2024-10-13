@@ -36,7 +36,7 @@ list(
   ),
   tar_target(
     tcga_gtex_meth_data,
-    load_tcga_gtex_meth_data("data/tcga_gtex_gene_meth.tsv"),
+    load_tcga_gtex_meth_data("data/tcga_gtex_meth.tsv"),
     format = "qs"
   ),
   tar_target(

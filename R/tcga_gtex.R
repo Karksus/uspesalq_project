@@ -13,13 +13,6 @@ load_tcga_gtex_meth_data <- function(meth_dataset) {
 
 format_tcga_gtex_meth_data <- function(meth_dataset) {
   df <- meth_dataset %>%
-    unite(
-      "cancer_type_methregion_type",
-      `Cancer type`,
-      Region,
-      sep = "_",
-      remove = TRUE
-    ) %>%
     mutate(
       methylation_status = case_when(
         `FDR adjusted p-value` <= 0.05 &
@@ -32,10 +25,10 @@ format_tcga_gtex_meth_data <- function(meth_dataset) {
           `Beta difference value` < 0.2 ~ "no_meth_effect"
       )
     ) %>%
-    dplyr::rename(entrez_id = `NCBI gene id`) %>%
+    dplyr::rename(entrez_id = `NCBI gene id`,cancer_type = `Cancer type`) %>%
     dplyr::select(all_of(
       c(
-        "cancer_type_methregion_type",
+        "cancer_type",
         "entrez_id",
         "methylation_status"
       )
@@ -44,9 +37,10 @@ format_tcga_gtex_meth_data <- function(meth_dataset) {
 
 tcga_gtex_meth_cancertype_to_column <- function(formmated_meth_data) {
   df <- formmated_meth_data %>%
-    pivot_wider(names_from = cancer_type_methregion_type,
+    pivot_wider(names_from = cancer_type,
                 values_from = methylation_status) %>%
-    rename_with(~ paste0("tcga_gtex_meth_", .), -entrez_id)
+    rename_with(~ paste0("tcga_gtex_meth_", .), -entrez_id) %>%
+    dplyr::filter(complete.cases(.))
 }
 
 dummify_tcga_gtex_meth_data <- function(df) {

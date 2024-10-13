@@ -1,7 +1,9 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|924f393b03c5ba79|||||||||||||||
+.Random.seed|object|bf6041158af89007|||||||||||||||
 annotate_clinicaltrials_data|function|235d0b26bc837bcf|||||||||||||||
 annotate_cosmic_freq_data|function|8a7021681a601b4d|||||||||||||||
+auc_plot_test_dataset|stem|732a3eb08d18979a|5969bb4490c502df|2576c330cc60a417|552740852||t20009.9080947313s|08ec9a1d380611bb|62|qs|local|vector|||0.25||
+auc_plot_train_dataset|stem|732a3eb08d18979a|ef03baf6b33b872f|a9cde0dbb066a0d2|318998952||t20009.9080969843s|08ec9a1d380611bb|62|qs|local|vector|||0.047||
 boruta_feature_selection|function|585427db62a160fa|||||||||||||||
 boruta_filtered_test_dataset|stem|43607d99856ae933|4f047263b58f1d1b|695bbde2cbc124d5|-7011203||t19990.0131262402s|376d50965914e8cd|1559840|qs|local|vector|||0.047||
 boruta_filtered_train_dataset|stem|1a036d9164674b77|02ee79c89772d17c|4c089e3820a4d47b|1046951396||t19990.0131819477s|85ad2114b048f81a|3614250|qs|local|vector|||0.032||
@@ -27,6 +29,8 @@ dummify_cosmic_data|function|aeac9a4dbc4789f1|||||||||||||||
 dummify_depmap_crispr|function|a446f6cdf04ce349|||||||||||||||
 dummify_depmap_rnai|function|5ed902c3a66e162e|||||||||||||||
 dummify_oncokb_data|function|de023f5a7422a1c9|||||||||||||||
+dummify_tcga_gtex_exp_data|function|2034230b16cb776a|||||||||||||||
+dummify_tcga_gtex_meth_data|function|a2de9c2a82ef4474|||||||||||||||
 elasticnet_model|stem|39843003d12591fa|fe88f1fafb7dc184|54a1c57185483f5b|-765755686||t19991.0363320922s|8c5dbf386fa498f4|371194|qs|local|vector|||588.313||
 extract_test_dataset|function|6c4694b42f27a472|||||||||||||||
 extract_train_dataset|function|4d01a1e9e04b5c10|||||||||||||||
@@ -39,6 +43,8 @@ filter_test_by_boruta_relevant_feature|function|a9d43088149a3c90|||||||||||||||
 filter_train_by_boruta_relevant_feature|function|1ba9e13022351f28|||||||||||||||
 final_gene_list|function|34abae6d32d17393|||||||||||||||
 format_oncokb_data|function|fe73d8781eb1f6dc|||||||||||||||
+format_tcga_gtex_exp_data|function|b1118b9841cebd53|||||||||||||||
+format_tcga_gtex_meth_data|function|ab7ea7d78cd529ad|||||||||||||||
 genes_as_index|function|755b7f8562c50464|||||||||||||||
 get_cosmic_target_data|function|3d41e2237e459924|||||||||||||||
 get_cosmic_wgs_data|function|c2a3005987a8c1c8|||||||||||||||
@@ -55,15 +61,21 @@ load_classification_data|function|35c472ebde044281|||||||||||||||
 load_clinicaltrials_data|function|81c6ef8fbcf4727a|||||||||||||||
 load_depmap_crispr_data|function|6490d9f421c4d00a|||||||||||||||
 load_depmap_rnai_data|function|39b30dc9f2ac4a62|||||||||||||||
-merge_all_data|function|79939eedac9cf9cc|||||||||||||||
-merge_cosmic_data|function|d1b2daeae367f672|||||||||||||||
+load_tcga_gtex_exp_data|function|f0edae67ec32312d|||||||||||||||
+load_tcga_gtex_meth_data|function|9525750be3a57267|||||||||||||||
+make_auc_plot_test_dataset|function|334c20de7c0bb95c|||||||||||||||
+make_auc_plot_train_dataset|function|40421a049bedf84f|||||||||||||||
+make_roc_analisys_test_dataset|function|f95bc8b45a2c26d8|||||||||||||||
+make_roc_analisys_train_dataset|function|f95bc8b45a2c26d8|||||||||||||||
+merge_all_data|function|c2f56180cb9be9fc|||||||||||||||
+merge_cosmic_data|function|1f96b7e12106df3c|||||||||||||||
 merge_cosmic_freq_cgc|function|63b0f5e3c3bbf7dc|||||||||||||||
 merge_counts|function|529c6de637b88be4|||||||||||||||
 merge_entrez_pubmed|function|7f1f372b43136bab|||||||||||||||
 min_max_scale|function|49c7feec118a154e|||||||||||||||
 model|stem|808c34e6dcbc4fdd|1462cb256323c23a|fb3e344bc60868e0|808688450||t19983.102967458s|7606bb0ee1d224c0|74680885|qs|local|vector|||14.422|glm.fit algoritmo não convergiu. glm.fit probabilidades ajustadas numericamente 0 ou 1 ocorreu|
-no_constants_dataset|stem|f76dcf7c55597af4|b820523234d7eacd|66571905fd5b8ad3|860748391||t19981.8825389717s|b2ac92f524ab012f|18944533|qs|local|vector|||21.812||
-object_from_project_prepare_model|object|274b67df5ab3eaeb|||||||||||||||
+no_constants_dataset|stem|85bb368029f87ef7|b820523234d7eacd|6ac3af68b37b4dc4|860748391||t20009.5583744967s|eb6a538e3f1b37b9|19226215|qs|local|vector|||23.859||
+object_from_project_prepare_model|object|f902a207b1b372e3|||||||||||||||
 post_vif_boruta_binom_model|stem|972cadae48e5ac81|cd116d9f70b8ecf4|afbe9c16ebc1d93a|1908001078||t19990.9500284731s|57812d0610faed8e|29019003|qs|local|vector|||2.828|glm.fit probabilidades ajustadas numericamente 0 ou 1 ocorreu|
 pre_vif_boruta_binom_model|stem|d15b40ae5b751b26|21acf18c4af14bb9|e304c2fa50252969|-434159845||t19990.0138517664s|b4339f732889dc23|64779948|qs|local|vector|||55.406|glm.fit algoritmo não convergiu. glm.fit probabilidades ajustadas numericamente 0 ou 1 ocorreu|
 predict_test_elasticnet_model|function|a984a92529ebd79a|||||||||||||||
@@ -73,18 +85,22 @@ relevant_features_filtered_dataset|stem|c9ec645048b230b0|021478d4249df269|a4c71d
 remove_constants|function|11c3aff80e9e6c6e|||||||||||||||
 remove_na_cosmic_cgc|function|dd02625229135eb9|||||||||||||||
 remove_na_entrez|function|0a6994d8392db135|||||||||||||||
+roc_test_dataset|stem|e8a104e6a7ad4744|be4cfe9a6c3ee336|469ea1389e7a6dde|718567440||t20009.6705945348s|7026e1e3ff48df49|147257|qs|local|vector|||0.016||
+roc_train_dataset|stem|f37091c6e61154bb|ba9f1c6de8417135|c7f454d06178fe5f|509014895||t20009.6706151742s|56a7d7b77b0ec669|717550|qs|local|vector|||0.015||
 scale_dataset|function|9ff6ef4f483392e8|||||||||||||||
-scaled_dataset|stem|96c1bfe55305fcb3|664b8081327dc7b3|bfe725c075958dce|-273354897||t19988.7693015626s|f17d4e07eb28c0d3|21563017|qs|local|vector|||3.5||
+scaled_dataset|stem|51e1d7bc390755d6|664b8081327dc7b3|6e772d1aec06ea24|-273354897||t20009.5585007053s|5be791c823f2ac7b|21856225|qs|local|vector|||6.219||
 split_dataset_train_test|function|804a5145bb289d87|||||||||||||||
-splitted_train_test_dataset|stem|62ff2450080d7b0f|3b1572203b8e5644|5aec0b09cf0306a8|-413829807||t19988.8500211993s|1f6988edbd8c67e4|22704270|qs|local|vector|||2.094||
-test_dataset|stem|1ebe926d02f01570|da287bdf4283580c|c11757931b3fcda2|1848661655||t19989.1218709981s|dcb2a02a732a16a3|6269687|qs|local|vector|||0.047||
-test_elasticnet_model|stem|8c3526d374910e13|f95bce1dab37c7d9|32e5b4d9c6897ec0|-695283960||t19999.8905268036s|be78b65a7da8fd12|233066|qs|local|vector|||94.141||
+splitted_train_test_dataset|stem|9237ba12e2b60b8f|3b1572203b8e5644|dcb165a5d6a3d4a5|-413829807||t20009.5585716289s|b34bb428124f7762|23115449|qs|local|vector|||1.079||
+tcga_gtex_exp_cancertype_to_column|function|a500e4bcdb2f9bf1|||||||||||||||
+tcga_gtex_meth_cancertype_to_column|function|c0650ba8c0f71cf9|||||||||||||||
+test_dataset|stem|02fd30412b97d0dc|da287bdf4283580c|eb89b78de7b86ad0|1848661655||t20009.5585957586s|c8320b2ccc9d1726|6452417|qs|local|vector|||0||
+test_elasticnet_model|stem|4c7c724e568ce1e1|f95bce1dab37c7d9|82d6eb5200d5dc70|-695283960||t20009.560165622s|7de16949bb010a7d|284123|qs|local|vector|||132.468||
 test_elasticnet_model_coeffs|stem|fe59e6a7248c2434|1e3d97d6ff628fd8|b48f32c1c1e7f0cc|1042182233||t19999.8978888569s|df12a0f21d2df04e|23231|qs|local|vector|||0.172||
-test_elasticnet_model_lambda_coeffs|stem|fe59e6a7248c2434|1e3d97d6ff628fd8|b48f32c1c1e7f0cc|1105109382||t19999.9103659241s|df12a0f21d2df04e|23231|qs|local|vector|||0.078||
-test_elasticnet_model_prediction|stem|8b829c76560d4440|08bd053a7294b1ee|2e1d55434d4aceb7|1366998470||t20001.9411882134s|65656fb70f367703|6320647|qs|local|vector|||1.781||
-train_dataset|stem|455f1d4de90f88dc|26182e8476765a04|f270e38dc6192892|573568920||t19989.1219812732s|fc81bf30b112bba7|16433163|qs|local|vector|||0.031||
-train_elasticnet_model_prediction|stem|8525e07394aa39e4|1f13c76b1cab461f|661d4951c7226aaa|2064661393||t20001.941328438s|287c00c73200f8a0|16493862|qs|local|vector|||4.344||
-training_elasticnet_model|stem|1df765f692314d9c|0b79cf55f105c166|5dbf9adceab69081|1800763863||t19999.8978840604s|75ba563802d0690d|371209|qs|local|vector|||634.718||
-training_elasticnet_model_lambda_coeffs|stem|d07db3dd651b64f8|8f79a7e4ad0a6158|3fadfc38f143f507|1213305811||t19999.8978897599s|6749d6d18f3dac48|24445|qs|local|vector|||0||
+test_elasticnet_model_lambda_coeffs|stem|1e85c3ab082c0615|1e3d97d6ff628fd8|aa04ed05e35bbd16|1105109382||t20009.5701209453s|2956324cbc746b93|23846|qs|local|vector|||0.406||
+test_elasticnet_model_prediction|stem|b0ff180a9a0d3d38|08bd053a7294b1ee|103cefb8487bc319|1366998470||t20009.5701583125s|630f23e3c2108d5c|6493036|qs|local|vector|||1.031||
+train_dataset|stem|afb4f8f54fe3cca5|26182e8476765a04|e5e6fe4c4cedf07e|573568920||t20009.5586228413s|b9c051388e05fa98|16654998|qs|local|vector|||0||
+train_elasticnet_model_prediction|stem|54ff8a7169346218|1f13c76b1cab461f|655fb0eae9390287|2064661393||t20009.5702591227s|945d432beaf6934d|16722012|qs|local|vector|||2.797||
+training_elasticnet_model|stem|aa17a05cb2611da9|0b79cf55f105c166|11e66eeb0852cee8|1800763863||t20009.5701089896s|ff69fbef64db3ce2|437748|qs|local|vector|||857.562||
+training_elasticnet_model_lambda_coeffs|stem|da1aff38178d17b8|8f79a7e4ad0a6158|b049880eaaf39e05|1213305811||t20009.5701216688s|0118c1f8f517d5b0|25073|qs|local|vector|||0.016||
 treat_na_values|function|2428341152cf0552|||||||||||||||
 vif_boruta_binom_model_variables|stem|5e5bf607bc5608c5|cc33e70fce0c62f4|bcb292aabad79759|-1647786609||t19990.0138791641s|ddfbd5fd0a8a706d|1002|qs|local|vector|||1.531||
