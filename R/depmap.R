@@ -22,7 +22,7 @@ depmap_crispr_site_to_column <-
     df <- filtered_depmap_crispr_data %>%
       pivot_wider(names_from = cell_line,
                   values_from = dependency) %>%
-      rename_with(~ paste0("depmap_crispr_", .), -c(entrez_id, gene_name)) %>%
+      rename_with( ~ paste0("depmap_crispr_", .),-c(entrez_id, gene_name)) %>%
       dplyr::filter(!is.na(entrez_id))
   }
 
@@ -64,7 +64,7 @@ depmap_rnai_site_to_column <- function(depmap_rnai_data) {
   df <- depmap_rnai_data %>%
     pivot_wider(names_from = cell_line,
                 values_from = dependency) %>%
-    rename_with(~ paste0("depmap_rnai_", .), -c(entrez_id, gene_name)) %>%
+    rename_with( ~ paste0("depmap_rnai_", .),-c(entrez_id, gene_name)) %>%
     dplyr::filter(!is.na(entrez_id))
 }
 
