@@ -27,3 +27,7 @@ tar_mermaid(targets_only = TRUE)
 Sys.setenv(TAR_PROJECT = "project_model")
 tar_make()
 tar_mermaid(targets_only = TRUE)
+
+Sys.setenv(TAR_PROJECT = "project_plots")
+tar_make()
+tar_mermaid(targets_only = TRUE)
