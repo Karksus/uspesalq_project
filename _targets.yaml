@@ -19,3 +19,6 @@ project_depmap:
 project_tcga_gtex:
   script: target_tcga_gtex.R
   store: store_tcga_gtex
+project_plots:
+  script: target_plots.R
+  store: store_plots

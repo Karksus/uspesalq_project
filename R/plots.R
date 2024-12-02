@@ -1,5 +1,5 @@
 library(ggplot2)
-
+library(pROC)
 
 make_roc_analisys_train_dataset <-
   function(elasticnet_model_prediction) {
@@ -53,19 +53,20 @@ make_auc_plot_test_dataset <- function(roc_data) {
   dev.off()
 }
 
-make_train_lambda_deviance_plot <- function(train_elasticnet_model){
-  jpeg(
-    "plots/train_lambda_deviance_plot.jpg",
-    width = 1700,
-    height = 1200,
-    res = 300
-  )
-  plot(train_elasticnet_model, xvar = "lambda", label = TRUE)
-  dev.off()
-  
-}
+make_train_lambda_deviance_plot <-
+  function(train_elasticnet_model) {
+    jpeg(
+      "plots/train_lambda_deviance_plot.jpg",
+      width = 1700,
+      height = 1200,
+      res = 300
+    )
+    plot(train_elasticnet_model, xvar = "lambda", label = TRUE)
+    dev.off()
+    
+  }
 
-make_test_lambda_deviance_plot <- function(test_elasticnet_model){
+make_test_lambda_deviance_plot <- function(test_elasticnet_model) {
   jpeg(
     "plots/test_lambda_deviance_plot.jpg",
     width = 1700,
@@ -84,7 +85,7 @@ make_train_lambda_coeffs_plot <- function(train_elasticnet_model) {
     height = 1400,
     res = 300
   )
-  plot(train_elasticnet_model $glmnet.fit, "lambda")
+  plot(train_elasticnet_model$glmnet.fit, "lambda")
   dev.off()
 }
 
@@ -95,94 +96,101 @@ make_test_lambda_coeffs_plot <- function(test_elasticnet_model) {
     height = 1400,
     res = 300
   )
-  plot(test_elasticnet_model $glmnet.fit, "lambda")
+  plot(test_elasticnet_model$glmnet.fit, "lambda")
   dev.off()
 }
 
 make_train_top10_coeffs_plot <- function(train_lambda_coeffs) {
   coef_optimal <- train_lambda_coeffs[[2]]
-  coef_data <- data.frame(
-    Feature = rownames(coef_optimal),
-    Coefficient = as.vector(coef_optimal)
-  )
-  coef_df <- coef_data[order(-abs(coef_data$Coefficient)), ][1:10, ]
-  jpeg(
-    "plots/train_top10_coeffs_plot.jpg",
-    width = 1200,
-    height = 1400,
-    res = 300
-  )
-  ggplot(coef_df, aes(x = reorder(Feature, Coefficient), y = Coefficient)) +
+  coef_data <- data.frame(Feature = rownames(coef_optimal),
+                          Coefficient = as.vector(coef_optimal))
+  coef_df <- coef_data[order(-abs(coef_data$Coefficient)),][1:10,]
+  
+  train_top10_coeffs_plot <-
+    ggplot(coef_df, aes(x = reorder(Feature, Coefficient), y = Coefficient)) +
     geom_point(color = "blue", size = 3) +
     coord_flip() +
-    labs(title = "Top 10 Features by Coefficient Magnitude - Training set",
+    labs(title = "Features by coeffcient - Top 10 (training set)",
          x = "Feature", y = "Coefficient") +
     theme_minimal()
-  dev.off()
+  ggsave(
+    filename = "plots/train_top10_coeffs_plot.jpg",
+    plot = train_top10_coeffs_plot,
+    dpi = 300,
+    height = 2,
+    width = 8,
+    device = "jpeg"
+  )
+  
 }
 
 make_train_top30_coeffs_plot <- function(train_lambda_coeffs) {
   coef_optimal <- train_lambda_coeffs[[2]]
-  coef_data <- data.frame(
-    Feature = rownames(coef_optimal),
-    Coefficient = as.vector(coef_optimal)
-  )
-  coef_df <- coef_data[order(-abs(coef_data$Coefficient)), ][1:30, ]
-  jpeg(
-    "plots/train_top30_coeffs_plot.jpg",
-    width = 1200,
-    height = 1400,
-    res = 300
-  )
-  ggplot(coef_df, aes(x = reorder(Feature, Coefficient), y = Coefficient)) +
+  coef_data <- data.frame(Feature = rownames(coef_optimal),
+                          Coefficient = as.vector(coef_optimal))
+  coef_df <- coef_data[order(-abs(coef_data$Coefficient)),][1:30,]
+  
+  train_top30_coeffs_plot <-
+    ggplot(coef_df, aes(x = reorder(Feature, Coefficient), y = Coefficient)) +
     geom_point(color = "blue", size = 3) +
     coord_flip() +
-    labs(title = "Top 30 Features by Coefficient Magnitude - Training set",
+    labs(title = "Features by coeffcient - Top 30 (training set)",
          x = "Feature", y = "Coefficient") +
     theme_minimal()
-  dev.off()
+  ggsave(
+    filename = "plots/train_top30_coeffs_plot.jpg",
+    plot = train_top30_coeffs_plot,
+    dpi = 300,
+    height = 4,
+    width = 8,
+    device = "jpeg"
+  )
 }
 
 make_test_top10_coeffs_plot <- function(test_lambda_coeffs) {
   coef_optimal <- test_lambda_coeffs[[2]]
-  coef_data <- data.frame(
-    Feature = rownames(coef_optimal),
-    Coefficient = as.vector(coef_optimal)
-  )
-  coef_df <- coef_data[order(-abs(coef_data$Coefficient)), ][1:10, ]
-  jpeg(
-    "plots/test_top10_coeffs_plot.jpg",
-    width = 1200,
-    height = 1400,
-    res = 300
-  )
-  ggplot(coef_df, aes(x = reorder(Feature, Coefficient), y = Coefficient)) +
+  coef_data <- data.frame(Feature = rownames(coef_optimal),
+                          Coefficient = as.vector(coef_optimal))
+  coef_df <- coef_data[order(-abs(coef_data$Coefficient)),][1:10,]
+  
+  test_top10_coeffs_plot <-
+    ggplot(coef_df, aes(x = reorder(Feature, Coefficient), y = Coefficient)) +
     geom_point(color = "blue", size = 3) +
     coord_flip() +
-    labs(title = "Top 10 Features by Coefficient Magnitude - Test set",
+    labs(title = "Features by coeffcient - Top 10 (test set)",
          x = "Feature", y = "Coefficient") +
     theme_minimal()
-  dev.off()
+  
+  ggsave(
+    filename = "plots/test_top10_coeffs_plot.jpg",
+    plot = test_top10_coeffs_plot,
+    dpi = 300,
+    height = 2,
+    width = 8,
+    device = "jpeg"
+  )
+  
 }
 
 make_test_top30_coeffs_plot <- function(test_lambda_coeffs) {
-  coef_optimal <- train_lambda_coeffs[[2]]
-  coef_data <- data.frame(
-    Feature = rownames(coef_optimal),
-    Coefficient = as.vector(coef_optimal)
-  )
-  coef_df <- coef_data[order(-abs(coef_data$Coefficient)), ][1:30, ]
-  jpeg(
-    "plots/test_top30_coeffs_plot.jpg",
-    width = 1200,
-    height = 1400,
-    res = 300
-  )
-  ggplot(coef_df, aes(x = reorder(Feature, Coefficient), y = Coefficient)) +
+  coef_optimal <- test_lambda_coeffs[[2]]
+  coef_data <- data.frame(Feature = rownames(coef_optimal),
+                          Coefficient = as.vector(coef_optimal))
+  coef_df <- coef_data[order(-abs(coef_data$Coefficient)),][1:30,]
+  
+  test_top30_coeffs_plot <-
+    ggplot(coef_df, aes(x = reorder(Feature, Coefficient), y = Coefficient)) +
     geom_point(color = "blue", size = 3) +
     coord_flip() +
-    labs(title = "Top 30 Features by Coefficient Magnitude - Test set",
+    labs(title = "Features by coeffcient - Top 30 (test set)",
          x = "Feature", y = "Coefficient") +
     theme_minimal()
-  dev.off()
+  ggsave(
+    filename = "plots/test_top30_coeffs_plot.jpg",
+    plot = test_top30_coeffs_plot,
+    dpi = 300,
+    height = 4,
+    width = 8,
+    device = "jpeg"
+  )
 }

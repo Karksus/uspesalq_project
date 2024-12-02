@@ -27,3 +27,7 @@ tar_config_set(script = "target_model.R",
 tar_config_set(script = "target_depmap.R",
                store = "store_depmap",
                project = "project_depmap")
+
+tar_config_set(script = "target_plots.R",
+               store = "store_plots",
+               project = "project_plots")

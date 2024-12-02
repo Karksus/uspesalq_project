@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|bf6041158af89007|||||||||||||||
+.Random.seed|object|c4e38ef49860b1c4|||||||||||||||
 annotate_clinicaltrials_data|function|235d0b26bc837bcf|||||||||||||||
 annotate_cosmic_freq_data|function|8a7021681a601b4d|||||||||||||||
 auc_plot_test_dataset|stem|732a3eb08d18979a|5969bb4490c502df|2576c330cc60a417|552740852||t20009.9080947313s|08ec9a1d380611bb|62|qs|local|vector|||0.25||
@@ -67,6 +67,14 @@ make_auc_plot_test_dataset|function|334c20de7c0bb95c|||||||||||||||
 make_auc_plot_train_dataset|function|40421a049bedf84f|||||||||||||||
 make_roc_analisys_test_dataset|function|f95bc8b45a2c26d8|||||||||||||||
 make_roc_analisys_train_dataset|function|f95bc8b45a2c26d8|||||||||||||||
+make_test_lambda_coeffs_plot|function|e23048561854e1ce|||||||||||||||
+make_test_lambda_deviance_plot|function|df6863c7fc6ebb1f|||||||||||||||
+make_test_top10_coeffs_plot|function|467430d733c34434|||||||||||||||
+make_test_top30_coeffs_plot|function|0137e1198d654a82|||||||||||||||
+make_train_lambda_coeffs_plot|function|c02612e2a8d75177|||||||||||||||
+make_train_lambda_deviance_plot|function|7249e9f5be854761|||||||||||||||
+make_train_top10_coeffs_plot|function|d6db3aa43f699bd5|||||||||||||||
+make_train_top30_coeffs_plot|function|ccba953c65669cad|||||||||||||||
 merge_all_data|function|c2f56180cb9be9fc|||||||||||||||
 merge_cosmic_data|function|1f96b7e12106df3c|||||||||||||||
 merge_cosmic_freq_cgc|function|63b0f5e3c3bbf7dc|||||||||||||||
