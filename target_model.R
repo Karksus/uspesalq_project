@@ -69,7 +69,6 @@ list(
     build_test_elasticnet_model(test_dataset),
     format = "qs"
   ),
-  
   tar_target(
     test_elasticnet_model_lambda_coeffs,
     get_test_elasticnet_best_lambda_coeffs(test_elasticnet_model),
@@ -82,6 +81,24 @@ list(
       test_elasticnet_model,
       test_elasticnet_model_lambda_coeffs
     ),
+    format = "qs"
+  ),
+  tar_target(
+    full_elasticnet_model,
+    build_full_elasticnet_model(scaled_dataset),
+    format = "qs"
+  ),
+  tar_target(
+    full_elasticnet_model_lambda_coeffs,
+    get_full_elasticnet_best_lambda_coeffs(full_elasticnet_model),
+    format = "qs"
+  ),
+  tar_target(
+    full_elasticnet_model_prediction,
+    predict_full_elasticnet_model(
+      scaled_dataset,
+      full_elasticnet_model,
+      full_elasticnet_model_lambda_coeffs),
     format = "qs"
   )
 )

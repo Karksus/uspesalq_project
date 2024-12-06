@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|c4e38ef49860b1c4|||||||||||||||
+.Random.seed|object|8151112a4e49fe67|||||||||||||||
 annotate_clinicaltrials_data|function|235d0b26bc837bcf|||||||||||||||
 annotate_cosmic_freq_data|function|8a7021681a601b4d|||||||||||||||
 auc_plot_test_dataset|stem|732a3eb08d18979a|5969bb4490c502df|2576c330cc60a417|552740852||t20009.9080947313s|08ec9a1d380611bb|62|qs|local|vector|||0.25||
@@ -9,6 +9,7 @@ boruta_filtered_test_dataset|stem|43607d99856ae933|4f047263b58f1d1b|695bbde2cbc1
 boruta_filtered_train_dataset|stem|1a036d9164674b77|02ee79c89772d17c|4c089e3820a4d47b|1046951396||t19990.0131819477s|85ad2114b048f81a|3614250|qs|local|vector|||0.032||
 boruta_relevant_features|stem|9d9b6af5ff2ad549|3ee49ed965273ac1|e49e91e5a71108c5|-535742318||t19989.1213639649s|425d75d207023dce|3984|qs|local|vector|||23439.813||
 build_elasticnet_model|function|29786cb9f3a9c037|||||||||||||||
+build_full_elasticnet_model|function|8a5e6b6b5432ec7a|||||||||||||||
 build_model|function|20149bf0b0c3132e|||||||||||||||
 build_post_vif_binom_model|function|0691d5fc0d498693|||||||||||||||
 build_pre_vif_binom_model|function|20149bf0b0c3132e|||||||||||||||
@@ -45,10 +46,14 @@ final_gene_list|function|34abae6d32d17393|||||||||||||||
 format_oncokb_data|function|fe73d8781eb1f6dc|||||||||||||||
 format_tcga_gtex_exp_data|function|b1118b9841cebd53|||||||||||||||
 format_tcga_gtex_meth_data|function|ab7ea7d78cd529ad|||||||||||||||
+full_elasticnet_model|stem|4eaf67d91dec25af|b52c81208bafb4a0|850da645ce5e03f6|-2116190513||t20063.0072401582s|e0a8d6291be77a7e|476131|qs|local|vector|||1621.953||
+full_elasticnet_model_lambda_coeffs|stem|f4db47acfa29344c|dc1dfebb96a05287|8c2c2749c44daf05|743318409||t20063.0072822327s|b6cb4d4d97310723|25444|qs|local|vector|||0.453||
+full_elasticnet_model_prediction|stem|02ccd5b51854a362|2d705cb567dc039f|c723eb9eb4523f21|421978936||t20063.0176049568s|f9ad959733e8c43c|21984381|qs|local|vector|||4.5||
 genes_as_index|function|755b7f8562c50464|||||||||||||||
 get_cosmic_target_data|function|3d41e2237e459924|||||||||||||||
 get_cosmic_wgs_data|function|c2a3005987a8c1c8|||||||||||||||
 get_entrez_gene_data|function|befb391ed76c0c6d|||||||||||||||
+get_full_elasticnet_best_lambda_coeffs|function|ef5af0dfa60e9af8|||||||||||||||
 get_oncokb_data|function|4029f3657e63d060|||||||||||||||
 get_test_elasticnet_best_lambda_coeffs|function|ef5af0dfa60e9af8|||||||||||||||
 get_training_elasticnet_best_lambda_coeffs|function|ef5af0dfa60e9af8|||||||||||||||
@@ -63,8 +68,14 @@ load_depmap_crispr_data|function|6490d9f421c4d00a|||||||||||||||
 load_depmap_rnai_data|function|39b30dc9f2ac4a62|||||||||||||||
 load_tcga_gtex_exp_data|function|f0edae67ec32312d|||||||||||||||
 load_tcga_gtex_meth_data|function|9525750be3a57267|||||||||||||||
+make_auc_plot_full_dataset|function|e59d08b1817fab73|||||||||||||||
 make_auc_plot_test_dataset|function|334c20de7c0bb95c|||||||||||||||
 make_auc_plot_train_dataset|function|40421a049bedf84f|||||||||||||||
+make_full_lambda_coeffs_plot|function|e5c149af9030b94a|||||||||||||||
+make_full_lambda_deviance_plot|function|75dfaed313c8d9fd|||||||||||||||
+make_full_top10_coeffs_plot|function|bb069608eda40881|||||||||||||||
+make_full_top30_coeffs_plot|function|98d8477d6f92f96f|||||||||||||||
+make_roc_analisys_full_dataset|function|f95bc8b45a2c26d8|||||||||||||||
 make_roc_analisys_test_dataset|function|f95bc8b45a2c26d8|||||||||||||||
 make_roc_analisys_train_dataset|function|f95bc8b45a2c26d8|||||||||||||||
 make_test_lambda_coeffs_plot|function|e23048561854e1ce|||||||||||||||
@@ -86,6 +97,8 @@ no_constants_dataset|stem|85bb368029f87ef7|b820523234d7eacd|6ac3af68b37b4dc4|860
 object_from_project_prepare_model|object|f902a207b1b372e3|||||||||||||||
 post_vif_boruta_binom_model|stem|972cadae48e5ac81|cd116d9f70b8ecf4|afbe9c16ebc1d93a|1908001078||t19990.9500284731s|57812d0610faed8e|29019003|qs|local|vector|||2.828|glm.fit probabilidades ajustadas numericamente 0 ou 1 ocorreu|
 pre_vif_boruta_binom_model|stem|d15b40ae5b751b26|21acf18c4af14bb9|e304c2fa50252969|-434159845||t19990.0138517664s|b4339f732889dc23|64779948|qs|local|vector|||55.406|glm.fit algoritmo não convergiu. glm.fit probabilidades ajustadas numericamente 0 ou 1 ocorreu|
+predict_all_elasticnet_model|function|5cd83a95dbc7ddbc|||||||||||||||
+predict_full_elasticnet_model|function|5cd83a95dbc7ddbc|||||||||||||||
 predict_test_elasticnet_model|function|a984a92529ebd79a|||||||||||||||
 predict_train_elasticnet_model|function|1e62b6319c207b40|||||||||||||||
 relevant_features_dataset|stem|f1195730f6fc8180|813c0ad90aeb35b8|613d26f87ef98f3c|1188559373||t19982.0662283293s|c5bc7d4a601e380e|3694|qs|local|vector|||15526.094||

@@ -63,7 +63,7 @@ remove_na_cosmic_cgc <- function(df) {
 
 remove_constants <- function(df) {
   df <- df %>%
-    select_if( ~ !all(is.na(.))) %>%
+    select_if(~ !all(is.na(.))) %>%
     select_if(function(col)
       length(unique(col)) > 1)
 }
@@ -180,4 +180,46 @@ predict_test_elasticnet_model <-
               type = "response")
     final_df <-
       cbind(df_main_var, predicted_probabilities_test, X_test)
+  }
+#########################FULL DATASET###########################
+
+build_full_elasticnet_model <- function(full_dataset) {
+  df_nodepenvar <- full_dataset %>%
+    dplyr::select(-c(pubmed_gene_symbol, entrez_id, cosmic_cgc_status))
+  
+  X <- as.matrix(df_nodepenvar)
+  y <- full_dataset$cosmic_cgc_status
+  
+  cv_elastic_net <-
+    cv.glmnet(X, y, alpha = 0.5, family = "binomial")
+}
+
+get_full_elasticnet_best_lambda_coeffs <-
+  function(elasticnet_model) {
+    best_lambda <- elasticnet_model$lambda.min
+    elastic_net_coefficients <-
+      coef(elasticnet_model, s = best_lambda)
+    lambda_coeffs_list <-
+      list(best_lambda, elastic_net_coefficients)
+  }
+
+predict_full_elasticnet_model <-
+  function(full_dataset,
+           cv_elastic_net_full,
+           lambda_coeffs_list) {
+    best_lambda <- lambda_coeffs_list[[1]]
+    df_main_var <- full_dataset %>%
+      dplyr::select(all_of(c(
+        "cosmic_cgc_status", "pubmed_gene_symbol", "entrez_id"
+      )))
+    X_full <- full_dataset %>%
+      dplyr::select(-c(pubmed_gene_symbol, entrez_id, cosmic_cgc_status)) %>%
+      as.matrix()
+    predicted_probabilities <-
+      predict(cv_elastic_net_full,
+              newx = X_full,
+              s = best_lambda,
+              type = "response")
+    final_df <-
+      cbind(df_main_var, predicted_probabilities, X_full)
   }
