@@ -23,5 +23,52 @@ The pipeline logic is divided in this repo with the following componentes:
 - `scripts` folder: Holds some of the side scripts use to extract some of the data used in the project. It is not used in the actual pipeline, but users may find it useful.
 - `store_` folders: holds Targets pipeline metadata. There is one "store" folder for each data source.
 - `target_` R scripts: Holds the Targets R package logic for each ETL pipeline run.
-- `projects_config.R: Sets all Targets configuration needed for this project. Running it will generate the `_targets.yaml`.
--  
+- `projects_config.R`: Sets all Targets configuration needed for this project. Running it will generate the `_targets.yaml`.
+- `run_tar_projects.R`: Script to run all data sources ETL sequentially. Writed with the aim to make running all the pipelines easier for the user.
+- `Plots` folder: Holds pipelines mermaid flowcharts and model result plots.
+
+## How to run the pipelines
+
+1 - Download all the data from this repository:
+
+```bash
+git clone https://github.com/Karksus/uspesalq_project.git
+```
+2 - Open the project folder as an RProject.
+
+3 - Check if you have all the required packages for this project and load it (or install it):
+```r
+library(targets)
+library(dplyr)
+library(arrow)
+library(data.table)
+library(tidyr)
+library(tidyverse)
+library(fastDummies)
+library(stringr)
+library(depmap)
+library(purrr)
+library(fastDummies)
+library(tidymodels)
+library(caret)
+library(ggplot2)
+library(glmnet)
+library(pROC)
+library(biomaRt)
+library(org.Hs.eg.db)
+library(readr)
+library(fastDummies)
+library(qs)
+```
+
+4 - Run the `projects_config.R`.
+
+5 - Run the `run_tar_projects.R` to run all pipelines sequentially.
+
+## Contribution
+
+Contributions are welcome! Feel free to submit pull requests or open issues for improvements.
+
+## Contact
+
+For inquiries or collaboration, please contact: [pedroaserio@gmail.com]
